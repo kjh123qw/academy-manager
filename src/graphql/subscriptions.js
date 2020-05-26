@@ -6,6 +6,8 @@ export const onCreateSubject = /* GraphQL */ `
     onCreateSubject {
       Id
       Subject
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -14,6 +16,8 @@ export const onUpdateSubject = /* GraphQL */ `
     onUpdateSubject {
       Id
       Subject
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -22,30 +26,38 @@ export const onDeleteSubject = /* GraphQL */ `
     onDeleteSubject {
       Id
       Subject
+      createdAt
+      updatedAt
     }
   }
 `;
 export const onCreateAcademyDb = /* GraphQL */ `
-  subscription OnCreateAcademyDb($Id: String) {
-    onCreateAcademyDB(Id: $Id) {
+  subscription OnCreateAcademyDb {
+    onCreateAcademyDB {
       Id
       Subject
+      createdAt
+      updatedAt
     }
   }
 `;
 export const onUpdateAcademyDb = /* GraphQL */ `
-  subscription OnUpdateAcademyDb($Id: String) {
-    onUpdateAcademyDB(Id: $Id) {
+  subscription OnUpdateAcademyDb {
+    onUpdateAcademyDB {
       Id
       Subject
+      createdAt
+      updatedAt
     }
   }
 `;
 export const onDeleteAcademyDb = /* GraphQL */ `
-  subscription OnDeleteAcademyDb($Id: String) {
-    onDeleteAcademyDB(Id: $Id) {
+  subscription OnDeleteAcademyDb {
+    onDeleteAcademyDB {
       Id
       Subject
+      createdAt
+      updatedAt
     }
   }
 `;

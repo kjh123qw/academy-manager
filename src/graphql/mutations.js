@@ -9,6 +9,8 @@ export const createSubject = /* GraphQL */ `
     createSubject(input: $input, condition: $condition) {
       Id
       Subject
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -20,6 +22,8 @@ export const updateSubject = /* GraphQL */ `
     updateSubject(input: $input, condition: $condition) {
       Id
       Subject
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -31,30 +35,47 @@ export const deleteSubject = /* GraphQL */ `
     deleteSubject(input: $input, condition: $condition) {
       Id
       Subject
+      createdAt
+      updatedAt
     }
   }
 `;
 export const createAcademyDb = /* GraphQL */ `
-  mutation CreateAcademyDb($input: CreateAcademyDBInput!) {
-    createAcademyDB(input: $input) {
+  mutation CreateAcademyDb(
+    $input: CreateAcademyDBInput!
+    $condition: ModelAcademyDBConditionInput
+  ) {
+    createAcademyDB(input: $input, condition: $condition) {
       Id
       Subject
+      createdAt
+      updatedAt
     }
   }
 `;
 export const updateAcademyDb = /* GraphQL */ `
-  mutation UpdateAcademyDb($input: UpdateAcademyDBInput!) {
-    updateAcademyDB(input: $input) {
+  mutation UpdateAcademyDb(
+    $input: UpdateAcademyDBInput!
+    $condition: ModelAcademyDBConditionInput
+  ) {
+    updateAcademyDB(input: $input, condition: $condition) {
       Id
       Subject
+      createdAt
+      updatedAt
     }
   }
 `;
 export const deleteAcademyDb = /* GraphQL */ `
-  mutation DeleteAcademyDb($input: DeleteAcademyDBInput!) {
-    deleteAcademyDB(input: $input) {
+  mutation DeleteAcademyDb(
+    $input: DeleteAcademyDBInput!
+    $condition: ModelAcademyDBConditionInput
+  ) {
+    deleteAcademyDB(input: $input, condition: $condition) {
       Id
       Subject
+      createdAt
+      updatedAt
     }
   }
 `;

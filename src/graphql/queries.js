@@ -2,10 +2,12 @@
 // this is an auto generated file. This will be overwritten
 
 export const getSubject = /* GraphQL */ `
-  query GetSubject($Id: ID!) {
-    getSubject(Id: $Id) {
+  query GetSubject($id: ID!) {
+    getSubject(id: $id) {
       Id
       Subject
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -19,29 +21,35 @@ export const listSubjects = /* GraphQL */ `
       items {
         Id
         Subject
+        createdAt
+        updatedAt
       }
       nextToken
     }
   }
 `;
 export const getAcademyDb = /* GraphQL */ `
-  query GetAcademyDb($Id: String!) {
-    getAcademyDB(Id: $Id) {
+  query GetAcademyDb($id: ID!) {
+    getAcademyDB(id: $id) {
       Id
       Subject
+      createdAt
+      updatedAt
     }
   }
 `;
-export const listAcademyDbs = /* GraphQL */ `
-  query ListAcademyDbs(
-    $filter: TableAcademyDBFilterInput
+export const listAcademyDBs = /* GraphQL */ `
+  query ListAcademyDBs(
+    $filter: ModelAcademyDBFilterInput
     $limit: Int
     $nextToken: String
   ) {
-    listAcademyDBS(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    listAcademyDBs(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         Id
         Subject
+        createdAt
+        updatedAt
       }
       nextToken
     }

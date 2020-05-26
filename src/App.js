@@ -14,8 +14,9 @@ function App() {
         if (loading) {
           return <div>Loading...</div>;
         }
+
         console.log(data);
-        return <div>Hello</div>;
+        return <div>Hello!! {data.getAcademyDB.Subject}</div>;
       }}
     </Connect>
   );
