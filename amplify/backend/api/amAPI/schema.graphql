@@ -1,7 +1,3 @@
-type Subject @model {
-  Id: String!
-  Subject: String!
-}
 type AcademyDB @model {
   Id: String!
   Subject: String!

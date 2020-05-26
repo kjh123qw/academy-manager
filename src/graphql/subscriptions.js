@@ -1,63 +1,27 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const onCreateSubject = /* GraphQL */ `
-  subscription OnCreateSubject {
-    onCreateSubject {
-      Id
-      Subject
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onUpdateSubject = /* GraphQL */ `
-  subscription OnUpdateSubject {
-    onUpdateSubject {
-      Id
-      Subject
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onDeleteSubject = /* GraphQL */ `
-  subscription OnDeleteSubject {
-    onDeleteSubject {
-      Id
-      Subject
-      createdAt
-      updatedAt
-    }
-  }
-`;
 export const onCreateAcademyDb = /* GraphQL */ `
-  subscription OnCreateAcademyDb {
-    onCreateAcademyDB {
+  subscription OnCreateAcademyDb($Id: String, $Subject: String) {
+    onCreateAcademyDB(Id: $Id, Subject: $Subject) {
       Id
       Subject
-      createdAt
-      updatedAt
     }
   }
 `;
 export const onUpdateAcademyDb = /* GraphQL */ `
-  subscription OnUpdateAcademyDb {
-    onUpdateAcademyDB {
+  subscription OnUpdateAcademyDb($Id: String, $Subject: String) {
+    onUpdateAcademyDB(Id: $Id, Subject: $Subject) {
       Id
       Subject
-      createdAt
-      updatedAt
     }
   }
 `;
 export const onDeleteAcademyDb = /* GraphQL */ `
-  subscription OnDeleteAcademyDb {
-    onDeleteAcademyDB {
+  subscription OnDeleteAcademyDb($Id: String, $Subject: String) {
+    onDeleteAcademyDB(Id: $Id, Subject: $Subject) {
       Id
       Subject
-      createdAt
-      updatedAt
     }
   }
 `;

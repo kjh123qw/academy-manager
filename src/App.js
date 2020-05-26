@@ -16,7 +16,7 @@ function App() {
         }
 
         console.log(data);
-        return <div>Hello!! {data.getAcademyDB.Subject}</div>;
+        return <div>Hello!! </div>;
       }}
     </Connect>
   );
