@@ -1,0 +1,4 @@
+type AcademyDB @model {
+  Id: String!
+  Subject: String!
+}
