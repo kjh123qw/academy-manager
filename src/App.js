@@ -1,7 +1,6 @@
 import React from "react";
 import Amplify, { API, graphqlOperation } from "aws-amplify";
 import { Connect } from "aws-amplify-react";
-import { Rehydrated } from "aws-appsync-react";
 import { ApolloProvider } from "@apollo/react-hooks";
 import { ApolloLink } from "apollo-link";
 import { createAuthLink } from "aws-appsync-auth-link";
@@ -57,11 +56,7 @@ function App() {
 
 const WithProvider = () => (
   <ApolloProvider client={client}>
-    <Rehydrated
-      render={({ rehydrated }) =>
-        rehydrated ? <App /> : <strong>Your custom UI componen here...</strong>
-      }
-    />
+    <App />
   </ApolloProvider>
 );
 
