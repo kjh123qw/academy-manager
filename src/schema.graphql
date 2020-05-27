@@ -1,0 +1,31 @@
+type Subject
+  @model
+  @key(name: "byTeacher", fields: ["id"])
+  @key(name: "byStudent", fields: ["id"]) {
+  id: ID
+  subject: String!
+  tcId: ID
+  startApply: Int
+  endApply: Int
+  startDay: Int
+  endDay: Int
+  total: Int
+  TeacherInfo: Teacher @connection(fields: ["tcId"])
+  StudentsInfo: [Student] @connection(keyName: "byStudentsInfo", fields: ["id"])
+}
+
+type Student @model @key(name: "byStudentsInfo", fields: ["sbId"]) {
+  id: ID
+  name: String!
+  age: Int
+  sbId: ID
+  SubjectInfo: Subject @connection(keyName: "byStudent", fields: ["id"])
+}
+
+type Teacher @model {
+  id: ID
+  name: String!
+  age: Int
+  sbId: ID
+  SubjectInfo: Subject @connection(keyName: "byTeacher", fields: ["id"])
+}
