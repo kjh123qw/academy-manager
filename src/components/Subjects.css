@@ -1,0 +1,79 @@
+.home-wrap .list-subject-wrap {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  padding: 5px;
+}
+.list-subject-wrap .item-subject {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 5px;
+  background-color: white;
+  border: 1px solid rgb(27, 129, 197);
+  border-radius: 5px;
+  align-items: center;
+  cursor: pointer;
+}
+.list-subject-wrap .item-subject:hover {
+  background-color: rgb(219, 241, 255);
+}
+.item-subject .subject-type {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  padding: 5px;
+  background-color: rgb(27, 129, 197);
+  color: white;
+  font-size: 1em;
+  font-weight: bold;
+}
+.item-subject-selected {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 5px;
+  background-color: rgb(210, 221, 230);
+  border: 1px solid rgb(8, 93, 149);
+  border-radius: 5px;
+  align-items: center;
+  cursor: pointer;
+}
+.item-subject-selected .subject-type {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  padding: 5px;
+  background-color: rgb(8, 93, 149);
+  color: white;
+  font-size: 1em;
+  font-weight: bold;
+}
+.subject-subject {
+  grid-column-start: 1;
+  grid-column-end: 2;
+  grid-row-start: 2;
+  grid-row-end: 4;
+  padding: 5px 10px;
+  color: rgb(0, 64, 107);
+  font-size: 1.1em;
+  font-weight: bold;
+}
+.subject-teacher {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  padding: 2px;
+  color: #555;
+  font-size: 1em;
+}
+.subject-apply {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  padding: 2px;
+  color: #555;
+  font-size: 0.9em;
+}
+.subject-indate {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  border-top: 1px dashed rgb(119, 121, 133);
+  padding: 2px 2px 2px 5px;
+  color: #777;
+  font-size: 0.9em;
+}

@@ -1,16 +1,22 @@
 import React from "react";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Amplify, { API, graphqlOperation } from "aws-amplify";
 import { Connect } from "aws-amplify-react";
-import { ApolloProvider } from "@apollo/react-hooks";
+
+import { ApolloProvider, useQuery } from "@apollo/react-hooks";
 import { ApolloLink } from "apollo-link";
 import { createAuthLink } from "aws-appsync-auth-link";
 import { createHttpLink } from "apollo-link-http";
 import ApolloClient from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 
-import { getSubject } from "./graphql/queries";
+import { getSubject, getStudent, getTeacher } from "./graphql/queries";
 import aws_exports from "./aws-exports";
 
+import Header from "./components/Header";
+import Students from "./components/Students";
+import Subjects from "./components/Subjects";
+import Teachers from "./components/Teachers";
 import "./App.css";
 
 Amplify.configure(aws_exports);
@@ -30,29 +36,33 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-function App() {
+const Home = () => {
   return (
-    <Connect query={graphqlOperation(getSubject, { id: "1" })}>
-      {({ data, loading }) => {
-        if (loading) {
-          return <div>Loading...</div>;
-        }
-
-        console.log(data);
-        return (
-          <div>
-            <h1>Test Subject Information</h1>
-            <div>id: {data.getSubject.id}</div>
-            <div>subject: {data.getSubject.subject}</div>
-            <div>teacher id: {data.getSubject.TeacherInfo.id}</div>
-            <div>teacher name: {data.getSubject.TeacherInfo.id}</div>
-            <div>age: {data.getSubject.TeacherInfo.age}</div>
-          </div>
-        );
-      }}
-    </Connect>
+    <div className="home-wrap">
+      <div className="item-student">
+        <div className="studnet-type">STUDENT</div>
+        <div className="studnet-name">KIM JEONGHO</div>
+        <div className="student-class">HTML5</div>
+      </div>
+    </div>
   );
-}
+};
+
+const App = () => {
+  return (
+    <Router>
+      <div className="wrapper">
+        <Header />
+        <Switch>
+          <Route exact={true} path="/" component={Home} />
+          <Route path="/students" component={Students} />
+          <Route path="/subjects" component={Subjects} />
+          <Route path="/teachers" component={Teachers} />
+        </Switch>
+      </div>
+    </Router>
+  );
+};
 
 const WithProvider = () => (
   <ApolloProvider client={client}>

@@ -81,6 +81,9 @@ export const listSubjects = /* GraphQL */ `
           updatedAt
         }
         StudentsInfo {
+          items {
+            id
+          }
           nextToken
         }
         createdAt
@@ -156,6 +159,10 @@ export const listStudents = /* GraphQL */ `
           total
           createdAt
           updatedAt
+          TeacherInfo {
+            id
+            name
+          }
         }
         createdAt
         updatedAt

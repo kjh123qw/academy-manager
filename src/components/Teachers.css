@@ -1,0 +1,302 @@
+.home-wrap {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+.add-btn-wrap {
+  display: grid;
+  grid-template-columns: 1fr;
+  padding: 10px 20px 5px;
+  align-items: center;
+  justify-items: end;
+}
+.add-btn-wrap .add-btn {
+  width: 120px;
+  height: 30px;
+  border-radius: 15px;
+  background-color: rgb(194, 126, 16);
+  color: #eee;
+  line-height: 28px;
+  font-size: 1em;
+  text-align: center;
+  cursor: pointer;
+}
+.add-btn-wrap .add-btn:hover {
+  background-color: rgb(214, 138, 16);
+}
+.home-wrap .list-teacher-wrap {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  padding: 5px;
+}
+.list-teacher-wrap .item-teacher {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 5px;
+  background-color: white;
+  border: 1px solid rgb(21, 163, 144);
+  border-radius: 5px;
+  align-items: center;
+  cursor: pointer;
+}
+.list-teacher-wrap .item-teacher:hover {
+  background-color: rgb(212, 255, 249);
+}
+.item-teacher .teacher-type {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  padding: 5px;
+  background-color: rgb(21, 163, 144);
+  color: white;
+  font-size: 1em;
+  font-weight: bold;
+}
+.item-teacher-selected {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 5px;
+  background-color: rgb(208, 228, 221);
+  border: 1px solid rgb(8, 119, 104);
+  border-radius: 5px;
+  align-items: center;
+  cursor: pointer;
+}
+.item-teacher-selected .teacher-type {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  padding: 5px;
+  background-color: rgb(8, 119, 104);
+  color: white;
+  font-size: 1em;
+  font-weight: bold;
+}
+.item-teacher-started {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 5px;
+  background-color: rgb(192, 192, 192);
+  border: 1px solid rgb(136, 136, 136);
+  border-radius: 5px;
+  align-items: center;
+}
+.item-teacher-started .teacher-type {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  padding: 5px;
+  background-color: rgb(136, 136, 136);
+  color: rgb(216, 216, 216);
+  font-size: 1em;
+  font-weight: bold;
+}
+.teacher-name {
+  grid-column-start: 1;
+  grid-column-end: 2;
+  padding: 3px;
+  color: rgb(0, 82, 69);
+  font-size: 1.1em;
+  font-weight: bold;
+}
+.teacher-subject {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  padding: 3px;
+  color: #555;
+  font-size: 1em;
+}
+.teacher-indate {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  border-top: 1px dashed rgb(8, 110, 97);
+  padding: 2px 2px 2px 5px;
+  color: #777;
+  font-size: 0.9em;
+}
+.selected-item {
+  position: sticky;
+  top: 0;
+  margin-top: 2px;
+  padding: 5px 10px 5px;
+  border: 1px solid rgb(8, 110, 97);
+  background-color: rgb(255, 255, 255);
+  z-index: 6;
+}
+.selected-item-completed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  background-color: rgba(255, 255, 255, 0.9);
+  align-items: center;
+  justify-items: center;
+}
+.selected-item-completed > div {
+  font-size: 20px;
+  font-weight: bold;
+}
+.selected-item-info {
+  display: grid;
+  grid-template-columns: 100px 50px 1fr;
+  margin-bottom: 3px;
+  gap: 5px;
+  align-items: center;
+}
+.selected-item-type {
+  color: rgb(7, 105, 92);
+  font-size: 1em;
+  font-weight: bold;
+  text-align: center;
+}
+.selected-item-photo {
+  overflow: hidden;
+  grid-row-start: 2;
+  grid-row-end: 5;
+  width: 100%;
+  height: 100%;
+  padding: 5px;
+  text-align: center;
+}
+.selected-item-photo img {
+  width: 80%;
+}
+.selected-item-key {
+  padding: 2px 2px 2px 5px;
+  color: #777;
+  font-size: 0.9em;
+}
+.selected-item-value {
+  padding: 2px 2px 2px 5px;
+  color: #333;
+  font-size: 0.9em;
+}
+.selected-item-subject {
+  grid-column-start: 1;
+  grid-column-end: 4;
+  grid-row-start: 5;
+  display: grid;
+  grid-template-columns: 0.3fr 0.7fr 1fr 0.3fr;
+  width: 80%;
+  margin: 0 auto;
+  background-color: rgba(0, 0, 0, 0.1);
+  border: 1px solid rgb(18, 117, 230);
+  align-items: center;
+}
+.selected-item-subject-title {
+  grid-column-start: 1;
+  grid-column-end: 5;
+  padding: 3px 0;
+  background-color: rgb(18, 117, 230);
+  color: #ddd;
+  text-align: center;
+  font-size: 1em;
+}
+.selected-item-subject-key {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  padding: 1px 0;
+  color: #555;
+  text-align: center;
+  font-size: 0.9em;
+}
+.selected-item-subject-value {
+  grid-column-start: 3;
+  grid-column-end: 4;
+  padding: 1px 0;
+  color: #222;
+  text-align: center;
+  font-size: 0.9em;
+}
+.selected-item-btns {
+  grid-column-start: 1;
+  grid-column-end: 4;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 35px;
+  width: 80%;
+  margin: 0 auto;
+  padding: 3px;
+  align-items: center;
+  justify-items: center;
+}
+.btn-change-subject {
+  width: 80%;
+  height: 35px;
+  text-align: center;
+  line-height: 33px;
+  border: 1px solid rgb(30, 149, 204);
+  background-color: rgba(255, 255, 255, 0.3);
+  color: rgb(30, 149, 204);
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+}
+.btn-change-subject:hover {
+  background-color: rgba(0, 174, 255, 0.15);
+}
+.btn-change-subject-save {
+  width: 80%;
+  height: 35px;
+  text-align: center;
+  line-height: 33px;
+  border: 1px solid rgb(31, 118, 199);
+  background-color: rgba(255, 255, 255, 0.3);
+  color: rgb(31, 118, 199);
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+}
+.btn-change-subject-save:hover {
+  background-color: rgba(31, 118, 199, 0.15);
+}
+.btn-close-selected-item {
+  width: 80%;
+  height: 35px;
+  text-align: center;
+  line-height: 33px;
+  border: 1px solid rgb(123, 137, 144);
+  color: rgb(123, 137, 144);
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+}
+.btn-close-selected-item:hover {
+  background-color: rgba(123, 137, 144, 0.15);
+}
+.btn-change-subject-cancel {
+  width: 80%;
+  height: 35px;
+  text-align: center;
+  line-height: 33px;
+  border: 1px solid rgb(123, 137, 144);
+  color: rgb(123, 137, 144);
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+}
+.btn-change-subject-cancel:hover {
+  background-color: rgba(123, 137, 144, 0.15);
+}
+
+/* SUBJECT LIST */
+
+/* END SUBJECT LIST */
+.list-teacher-wrap-nouse .item-teacher:hover {
+  animation-name: teacherHover;
+  animation-duration: 1s;
+  animation-iteration-count: 1;
+  animation-timing-function: ease;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+}
+@keyframes teacherHover {
+  from {
+    background-color: white;
+  }
+  to {
+    background-color: rgb(193, 240, 234);
+  }
+}
