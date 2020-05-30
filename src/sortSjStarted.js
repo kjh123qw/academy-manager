@@ -1,4 +1,4 @@
-const sortStarted = (ok = true) => {
+const sortSjStarted = (ok = true) => {
   return (a, b) => {
     if (!ok) return 0;
     let date = new Date();
@@ -10,19 +10,16 @@ const sortStarted = (ok = true) => {
     let day = date.getDate() >= 10 ? date.getDate() : "0" + date.getDate();
     let newDate = Number(year + "" + month + "" + day);
 
-    if (!a.hasOwnProperty("SubjectInfo") || !b.hasOwnProperty("SubjectInfo"))
+    if (!a.hasOwnProperty("endApply") || !b.hasOwnProperty("endApply"))
       return 0;
 
     let comparison = 0;
-    if (Number(a.SubjectInfo.endApply) <= newDate) comparison = 1;
-    if (Number(b.SubjectInfo.endApply) <= newDate) comparison = -1;
-    if (
-      Number(a.SubjectInfo.endApply) <= newDate &&
-      Number(b.SubjectInfo.endApply) <= newDate
-    )
+    if (Number(a.endApply) <= newDate) comparison = 1;
+    if (Number(b.endApply) <= newDate) comparison = -1;
+    if (Number(a.endApply) <= newDate && Number(b.endApply) <= newDate)
       comparison = 0;
     return comparison;
   };
 };
 
-export default sortStarted;
+export default sortSjStarted;

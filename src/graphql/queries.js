@@ -237,6 +237,12 @@ export const listTeachers = /* GraphQL */ `
           total
           createdAt
           updatedAt
+          StudentsInfo {
+            items {
+              id
+            }
+            nextToken
+          }
         }
         createdAt
         updatedAt

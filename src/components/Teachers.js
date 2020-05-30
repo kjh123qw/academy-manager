@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import { listTeachers, listSubjects } from "../graphql/queries";
@@ -13,13 +13,13 @@ import blankImage from "../images/blank-profile.png";
 import "./Teachers.css";
 import "./Subjects.css";
 
-const Teachers = (props) => {
+const Teachers = () => {
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [subjectSelect, setSubjectSelect] = useState(false);
   const [saveSetting, setSaveSetting] = useState(0);
   const [inpuVisible, setInpuVisible] = useState(false);
-
+  const [originalSubject, setOriginalSubject] = useState();
   let date = new Date();
   let year = date.getFullYear();
   let month =
@@ -28,13 +28,23 @@ const Teachers = (props) => {
       : "0" + (1 + date.getMonth());
   let day = date.getDate() >= 10 ? date.getDate() : "0" + date.getDate();
   const newDate = Number(year + "" + month + "" + day);
-
-  const [doUpdateTeacher, { data: updateTeacherData }] = useMutation(
-    gql(updateTeacher)
-  );
-  const { loading: stuLoading, error: stuError, data: teachers } = useQuery(
-    gql(listTeachers)
-  );
+  const [
+    doUpdateTeacher,
+    { loading: updateTeacherLoading, error: updateTeacherError },
+  ] = useMutation(gql(updateTeacher));
+  const [
+    doUpdateSubject,
+    { loading: updateSubjectLoading, error: updateSubjectError },
+  ] = useMutation(gql(updateSubject));
+  const {
+    loading: stuLoading,
+    error: stuError,
+    data: teachers,
+    refetch: tcRefetch,
+    networkStatus: tcNetworkStatus,
+  } = useQuery(gql(listTeachers), {
+    notifyOnNetworkStatusChange: true,
+  });
   const {
     loading: sbjLoading,
     error: sbjError,
@@ -43,17 +53,26 @@ const Teachers = (props) => {
     networkStatus: sbjNetworkStatus,
   } = useQuery(gql(listSubjects), {
     notifyOnNetworkStatusChange: true,
+    // fetchPolicy: "no-cache",
   });
-  if (sbjNetworkStatus === 4)
-    return <div className="load-box">Refetching...</div>;
-  if (stuLoading || sbjLoading)
-    return <div className="load-box">Loading...</div>;
+  if (sbjNetworkStatus === 4 || tcNetworkStatus === 4)
+    return (
+      <div className="loading-layer">
+        <div>Refetching...</div>
+      </div>
+    );
+  if (stuLoading || sbjLoading || updateTeacherLoading || updateSubjectLoading)
+    return (
+      <div className="loading-layer">
+        <div>Loading...</div>
+      </div>
+    );
   if (stuError || sbjError) return <div>Error!</div>;
   const teacherSelectHandler = (teacher, e) => {
     e.preventDefault();
     setSelectedTeacher(teacher);
     setSelectedSubject(teacher.SubjectInfo);
-    console.log(teacher);
+    setOriginalSubject(teacher.SubjectInfo);
   };
   const closeChangeSubjectHandler = (e) => {
     e.preventDefault();
@@ -95,20 +114,34 @@ const Teachers = (props) => {
   const saveSubjectHandler = async (e) => {
     e.preventDefault();
     if (selectedTeacher.id !== null && selectedSubject.id !== null) {
-      setSaveSetting(1);
-      await doUpdateTeacher({
+      // await client.resetStore().then(async () => {
+      // client.cache.reset();
+      // console.log(client);
+      await doUpdateSubject({
         variables: {
-          input: { id: selectedTeacher.id, sbId: selectedSubject.id },
+          input: { id: originalSubject.id, tcId: "0" },
         },
-      }).then((updatedata) => {
-        setSelectedTeacher(updatedata.data.updateTeacher);
-        setSaveSetting(2);
-        setTimeout(() => {
-          setSaveSetting(0);
-          setSubjectSelect(false);
-          sbjRefetch();
-        }, 1000);
+      }).then(async () => {
+        await doUpdateSubject({
+          variables: {
+            input: { id: selectedSubject.id, tcId: selectedTeacher.id },
+          },
+        }).then(async () => {
+          await doUpdateTeacher({
+            variables: {
+              input: { id: selectedTeacher.id, sbId: selectedSubject.id },
+            },
+          }).then(async (updatedata) => {
+            setSelectedTeacher(updatedata.data.updateTeacher);
+            await sbjRefetch().then(async () => {
+              await tcRefetch().then(() => {
+                setSubjectSelect(false);
+              });
+            });
+          });
+        });
       });
+      // });
     }
   };
   const teacherInfo = () => {
@@ -211,12 +244,12 @@ const Teachers = (props) => {
     if (selectedSubject.id === "0") {
       return (
         <div className="selected-item-subject">
-          <div className="selected-item-subject-title">SELECTED SUBJECT</div>
+          <div className="selected-item-subject-title">SUBJECT</div>
           <div className="selected-item-subject-key">Subject</div>
           <div className="selected-item-subject-value">
             {selectedSubject.subject}
           </div>
-          <div className="selected-item-subject-key">Teacher</div>
+          <div className="selected-item-subject-key">Applicant</div>
           <div className="selected-item-subject-value">-</div>
           <div className="selected-item-subject-key">Start</div>
           <div className="selected-item-subject-value">-</div>
@@ -227,14 +260,18 @@ const Teachers = (props) => {
     } else {
       return (
         <div className="selected-item-subject">
-          <div className="selected-item-subject-title">SELECTED SUBJECT</div>
+          <div className="selected-item-subject-title">SUBJECT</div>
           <div className="selected-item-subject-key">Subject</div>
           <div className="selected-item-subject-value">
             {selectedSubject.subject}
           </div>
-          <div className="selected-item-subject-key">Teacher</div>
+          <div className="selected-item-subject-key">Applicant</div>
           <div className="selected-item-subject-value">
-            {selectedSubject.TeacherInfo.name}
+            {"[ " +
+              selectedSubject.StudentsInfo.items.length +
+              " / " +
+              selectedSubject.total +
+              " ]"}
           </div>
           <div className="selected-item-subject-key">Start</div>
           <div className="selected-item-subject-value">
@@ -278,40 +315,38 @@ const Teachers = (props) => {
     var itemClassName = "item-teacher";
     var subjectClassName = "item-subject";
     if (subjectSelect) {
+      itemClassName = "item-subject";
       return (
         <div className="list-subject-wrap">
           {[]
             .concat(subjects.listSubjects.items)
             .sort(sortDate("endApply"))
             .filter(function (obj) {
-              return obj.tcId !== "0";
+              return obj.id !== "0";
             })
             .filter(function (obj) {
-              return obj.total > obj.TeachersInfo.items.length;
+              return obj.tcId === "0";
             })
-            .filter(filterApply())
             .map(function (subject, index) {
               if (selectedSubject !== null) {
                 if (selectedSubject.id === subject.id) {
-                  itemClassName = "item-subject-selected";
+                  subjectClassName = "item-subject-selected";
                 } else {
-                  itemClassName = "item-subject";
+                  subjectClassName = "item-subject";
                 }
               }
               return (
                 <div
                   key={subject.id}
-                  className={itemClassName}
+                  className={subjectClassName}
                   onClick={subjectSelectHandler.bind(this, subject)}
                 >
                   <div className="subject-type">
-                    SUBJECT [ {subject.TeachersInfo.items.length} /{" "}
+                    SUBJECT [ {subject.StudentsInfo.items.length} /{" "}
                     {subject.total} ]
                   </div>
                   <div className="subject-subject">{subject.subject}</div>
-                  <div className="subject-teacher">
-                    {subject.TeacherInfo.name}
-                  </div>
+                  <div className="subject-name">{subject.TeacherInfo.name}</div>
                   <div className="subject-apply">
                     {String(subject.startApply).substr(2, 2) +
                       "/" +
@@ -332,7 +367,6 @@ const Teachers = (props) => {
         </div>
       );
     } else {
-      console.log(teachers.listTeachers.items);
       return (
         <div className="list-teacher-wrap">
           {[]
@@ -354,7 +388,7 @@ const Teachers = (props) => {
 
               if (
                 teacher.sbId === "0" ||
-                newDate <= Number(teacher.SubjectInfo.startDay)
+                newDate <= Number(teacher.SubjectInfo.endApply)
               ) {
                 return (
                   <div

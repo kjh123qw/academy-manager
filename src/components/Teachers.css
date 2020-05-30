@@ -35,19 +35,19 @@
   grid-template-columns: 150px 1fr;
   gap: 5px;
   background-color: white;
-  border: 1px solid rgb(21, 163, 144);
+  border: 1px solid rgb(209, 47, 47);
   border-radius: 5px;
   align-items: center;
   cursor: pointer;
 }
 .list-teacher-wrap .item-teacher:hover {
-  background-color: rgb(212, 255, 249);
+  background-color: rgb(255, 226, 226);
 }
 .item-teacher .teacher-type {
   grid-column-start: 1;
   grid-column-end: 3;
   padding: 5px;
-  background-color: rgb(21, 163, 144);
+  background-color: rgb(209, 47, 47);
   color: white;
   font-size: 1em;
   font-weight: bold;
@@ -57,7 +57,7 @@
   grid-template-columns: 150px 1fr;
   gap: 5px;
   background-color: rgb(208, 228, 221);
-  border: 1px solid rgb(8, 119, 104);
+  border: 1px solid rgb(148, 17, 17);
   border-radius: 5px;
   align-items: center;
   cursor: pointer;
@@ -66,7 +66,7 @@
   grid-column-start: 1;
   grid-column-end: 3;
   padding: 5px;
-  background-color: rgb(8, 119, 104);
+  background-color: rgb(148, 17, 17);
   color: white;
   font-size: 1em;
   font-weight: bold;
@@ -107,7 +107,7 @@
 .teacher-indate {
   grid-column-start: 1;
   grid-column-end: 3;
-  border-top: 1px dashed rgb(8, 110, 97);
+  border-top: 1px dashed rgb(167, 167, 167);
   padding: 2px 2px 2px 5px;
   color: #777;
   font-size: 0.9em;

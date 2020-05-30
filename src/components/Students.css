@@ -107,7 +107,7 @@
 .student-indate {
   grid-column-start: 1;
   grid-column-end: 3;
-  border-top: 1px dashed rgb(8, 110, 97);
+  border-top: 1px dashed rgb(167, 167, 167);
   padding: 2px 2px 2px 5px;
   color: #777;
   font-size: 0.9em;

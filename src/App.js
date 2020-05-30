@@ -1,16 +1,22 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import Amplify, { API, graphqlOperation } from "aws-amplify";
-import { Connect } from "aws-amplify-react";
+import Amplify from "aws-amplify";
 
-import { ApolloProvider, useQuery } from "@apollo/react-hooks";
+import { ApolloProvider, useQuery, useMutation } from "@apollo/react-hooks";
+import { gql } from "apollo-boost";
 import { ApolloLink } from "apollo-link";
 import { createAuthLink } from "aws-appsync-auth-link";
 import { createHttpLink } from "apollo-link-http";
 import ApolloClient from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 
-import { getSubject, getStudent, getTeacher } from "./graphql/queries";
+import {
+  listTeachers,
+  listSubjects,
+  getSubject,
+  getStudent,
+  getTeacher,
+} from "./graphql/queries";
 import aws_exports from "./aws-exports";
 
 import Header from "./components/Header";
@@ -53,12 +59,10 @@ const App = () => {
     <Router>
       <div className="wrapper">
         <Header />
-        <Switch>
-          <Route exact={true} path="/" component={Home} />
-          <Route path="/students" component={Students} />
-          <Route path="/subjects" component={Subjects} />
-          <Route path="/teachers" component={Teachers} />
-        </Switch>
+        <Route exact={true} path="/" component={Home} />
+        <Route path="/students" component={Students} />
+        <Route path="/subjects" component={Subjects} />
+        <Route path="/teachers" component={Teachers} />
       </div>
     </Router>
   );

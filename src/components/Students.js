@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import { listStudents, listSubjects } from "../graphql/queries";
@@ -13,13 +13,13 @@ import blankImage from "../images/blank-profile.png";
 import "./Students.css";
 import "./Subjects.css";
 
-const Students = (props) => {
+const Students = () => {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [subjectSelect, setSubjectSelect] = useState(false);
   const [saveSetting, setSaveSetting] = useState(0);
   const [inpuVisible, setInpuVisible] = useState(false);
-
+  const _isMounted = useRef(null);
   let date = new Date();
   let year = date.getFullYear();
   let month =
@@ -29,9 +29,7 @@ const Students = (props) => {
   let day = date.getDate() >= 10 ? date.getDate() : "0" + date.getDate();
   const newDate = Number(year + "" + month + "" + day);
 
-  const [doUpdateStudent, { data: updateStudentData }] = useMutation(
-    gql(updateStudent)
-  );
+  const [doUpdateStudent] = useMutation(gql(updateStudent));
   const { loading: stuLoading, error: stuError, data: students } = useQuery(
     gql(listStudents)
   );
@@ -45,15 +43,22 @@ const Students = (props) => {
     notifyOnNetworkStatusChange: true,
   });
   if (sbjNetworkStatus === 4)
-    return <div className="load-box">Refetching...</div>;
+    return (
+      <div className="loading-layer">
+        <div>Refetching...</div>
+      </div>
+    );
   if (stuLoading || sbjLoading)
-    return <div className="load-box">Loading...</div>;
+    return (
+      <div className="loading-layer">
+        <div>Loading...</div>
+      </div>
+    );
   if (stuError || sbjError) return <div>Error!</div>;
   const studentSelectHandler = (student, e) => {
     e.preventDefault();
     setSelectedStudent(student);
     setSelectedSubject(student.SubjectInfo);
-    console.log(student);
   };
   const closeChangeSubjectHandler = (e) => {
     e.preventDefault();
@@ -94,20 +99,17 @@ const Students = (props) => {
   };
   const saveSubjectHandler = async (e) => {
     e.preventDefault();
+    setSubjectSelect(false);
     if (selectedStudent.id !== null && selectedSubject.id !== null) {
-      setSaveSetting(1);
       await doUpdateStudent({
         variables: {
           input: { id: selectedStudent.id, sbId: selectedSubject.id },
         },
-      }).then((updatedata) => {
+      }).then(async (updatedata) => {
         setSelectedStudent(updatedata.data.updateStudent);
-        setSaveSetting(2);
-        setTimeout(() => {
-          setSaveSetting(0);
+        await sbjRefetch().then(() => {
           setSubjectSelect(false);
-          sbjRefetch();
-        }, 1000);
+        });
       });
     }
   };
@@ -332,14 +334,13 @@ const Students = (props) => {
         </div>
       );
     } else {
-      console.log(students.listStudents.items);
       return (
         <div className="list-student-wrap">
           {[]
             .concat(students.listStudents.items)
             .sort(sortCreatedAt("updatedAt", "desc"))
             .sort(sortStarted())
-            .sort(sortSbId())
+            .sort(sortSbId("sbId"))
             .map(function (student, index) {
               if (selectedStudent !== null) {
                 if (selectedStudent.id === student.id) {
