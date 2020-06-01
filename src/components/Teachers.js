@@ -1,8 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
+import { v4 as uuidv4 } from "uuid";
 import { listTeachers, listSubjects } from "../graphql/queries";
-import { updateSubject, updateTeacher } from "../graphql/mutations";
+import {
+  updateSubject,
+  updateTeacher,
+  createTeacher,
+  deleteTeacher,
+} from "../graphql/mutations";
+import { AiOutlineEdit, AiFillDelete } from "react-icons/ai";
 
 import sortStarted from "../sortStarted";
 import sortSbId from "../sortSbId";
@@ -17,9 +24,17 @@ const Teachers = () => {
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [subjectSelect, setSubjectSelect] = useState(false);
-  const [saveSetting, setSaveSetting] = useState(0);
   const [inpuVisible, setInpuVisible] = useState(false);
   const [originalSubject, setOriginalSubject] = useState();
+  const [oldTeacherSbId, setOldTeacherSbId] = useState("");
+  const [newTeacherId, setNewTeacherId] = useState("");
+  const [newTeacherName, setNewTeacherName] = useState("");
+  const [newTeacherAge, setNewTeacherAge] = useState("");
+  const [newTeacherSbId, setNewTeacherSbId] = useState(0);
+  const [validationMessage, setValidationMessage] = useState(null);
+  const [filterKeyword, setFilterKeyword] = useState("");
+  const [filterNoitem, setFilterNoitem] = useState(true);
+  const [modifyItem, setModifyItem] = useState(false);
   let date = new Date();
   let year = date.getFullYear();
   let month =
@@ -36,6 +51,14 @@ const Teachers = () => {
     doUpdateSubject,
     { loading: updateSubjectLoading, error: updateSubjectError },
   ] = useMutation(gql(updateSubject));
+  const [
+    doCreateTeacher,
+    { loading: createTeacherLoading, error: createTeacherError },
+  ] = useMutation(gql(createTeacher));
+  const [
+    doDeleteTeacher,
+    { loading: deleteTeacherLoading, error: deleteTeacherError },
+  ] = useMutation(gql(deleteTeacher));
   const {
     loading: stuLoading,
     error: stuError,
@@ -61,7 +84,13 @@ const Teachers = () => {
         <div>Refetching...</div>
       </div>
     );
-  if (stuLoading || sbjLoading || updateTeacherLoading || updateSubjectLoading)
+  if (
+    stuLoading ||
+    sbjLoading ||
+    updateTeacherLoading ||
+    updateSubjectLoading ||
+    createTeacherLoading
+  )
     return (
       <div className="loading-layer">
         <div>Loading...</div>
@@ -70,9 +99,13 @@ const Teachers = () => {
   if (stuError || sbjError) return <div>Error!</div>;
   const teacherSelectHandler = (teacher, e) => {
     e.preventDefault();
+    setNewTeacherAge("");
+    setNewTeacherName("");
+    setNewTeacherSbId("0");
+    setInpuVisible(false);
+    setValidationMessage(null);
     setSelectedTeacher(teacher);
     setSelectedSubject(teacher.SubjectInfo);
-    setOriginalSubject(teacher.SubjectInfo);
   };
   const closeChangeSubjectHandler = (e) => {
     e.preventDefault();
@@ -82,6 +115,7 @@ const Teachers = () => {
   const openChangeSubjectHandler = (e) => {
     e.preventDefault();
     setSubjectSelect(true);
+    setOriginalSubject(selectedTeacher.SubjectInfo);
   };
   const closeSelectedItem = (e) => {
     e.preventDefault();
@@ -91,25 +125,6 @@ const Teachers = () => {
   const subjectSelectHandler = (subject, e) => {
     e.preventDefault();
     setSelectedSubject(subject);
-  };
-  const inputLayer = () => {
-    if (inpuVisible) {
-      return (
-        <div className="input-layer">
-          <form>
-            <div className="input-layer-title"></div>
-            <div className="input-layer-key"></div>
-            <div className="input-layer-input">
-              <input type="text" placeholder="Name" />
-            </div>
-            <div className="input-layer-key"></div>
-            <div className="input-layer-input">
-              <input type="text" placeholder="Age" />
-            </div>
-          </form>
-        </div>
-      );
-    }
   };
   const saveSubjectHandler = async (e) => {
     e.preventDefault();
@@ -133,11 +148,12 @@ const Teachers = () => {
             },
           }).then(async (updatedata) => {
             setSelectedTeacher(updatedata.data.updateTeacher);
-            await sbjRefetch().then(async () => {
-              await tcRefetch().then(() => {
-                setSubjectSelect(false);
-              });
-            });
+            setSubjectSelect(false);
+            // await sbjRefetch().then(async () => {
+            //   await tcRefetch().then(() => {
+            //     setSubjectSelect(false);
+            //   });
+            // });
           });
         });
       });
@@ -156,8 +172,6 @@ const Teachers = () => {
           <div className="selected-item-value">{selectedTeacher.name}</div>
           <div className="selected-item-key">Age</div>
           <div className="selected-item-value">{selectedTeacher.age}</div>
-          <div className="selected-item-key">Job</div>
-          <div className="selected-item-value">Businessman</div>
           <div className="selected-item-key">Date</div>
           <div className="selected-item-value">
             {String(selectedTeacher.createdAt).substr(0, 4) +
@@ -166,6 +180,59 @@ const Teachers = () => {
               "/" +
               String(selectedTeacher.createdAt).substr(8, 2)}
           </div>
+          <div className="modify-delete-btn">
+            <div
+              className="selected-item-modify"
+              onClick={async () => {
+                if (window.confirm("Are you sure to modify?")) {
+                  setOldTeacherSbId(selectedTeacher.sbId);
+                  setNewTeacherId(selectedTeacher.id);
+                  setNewTeacherName(selectedTeacher.name);
+                  setNewTeacherAge(selectedTeacher.age);
+                  setNewTeacherSbId(selectedTeacher.sbId);
+                  setSelectedTeacher(null);
+                  setModifyItem(true);
+                  setInpuVisible(true);
+                }
+              }}
+            >
+              <AiOutlineEdit />
+            </div>
+            <div
+              className="selected-item-delete"
+              onClick={async () => {
+                if (window.confirm("Are you sure to delete?")) {
+                  await doDeleteTeacher({
+                    variables: {
+                      input: { id: selectedTeacher.id },
+                    },
+                  }).then(async () => {
+                    await doUpdateSubject({
+                      variables: {
+                        input: { id: selectedTeacher.sbId, tcId: "0" },
+                      },
+                    }).then(async () => {
+                      await sbjRefetch().then(async () => {
+                        await tcRefetch().then(() => {
+                          setSelectedTeacher(null);
+                        });
+                      });
+                    });
+                  });
+                }
+              }}
+            >
+              <AiFillDelete />
+            </div>
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div className="selected-item-info">
+          <div className="selected-item-type">TEACHER</div>
+          <div className="selected-item-key">Name</div>
+          <div className="selected-item-value">{selectedTeacher.name}</div>
         </div>
       );
     }
@@ -223,28 +290,11 @@ const Teachers = () => {
       }
     }
   };
-  const saveMessage = () => {
-    if (saveSetting === 1 && subjectSelect) {
-      return (
-        <div className="selected-item-completed">
-          <div>Saving to the database ...</div>
-        </div>
-      );
-    } else if (saveSetting === 2 && subjectSelect) {
-      return (
-        <div className="selected-item-completed">
-          <div>Successed to save!</div>
-        </div>
-      );
-    } else {
-      return;
-    }
-  };
   const subjectInfo = () => {
     if (selectedSubject.id === "0") {
       return (
         <div className="selected-item-subject">
-          <div className="selected-item-subject-title">SUBJECT</div>
+          <div className="selected-item-subject-title">SUBJECT INFORMATION</div>
           <div className="selected-item-subject-key">Subject</div>
           <div className="selected-item-subject-value">
             {selectedSubject.subject}
@@ -260,7 +310,7 @@ const Teachers = () => {
     } else {
       return (
         <div className="selected-item-subject">
-          <div className="selected-item-subject-title">SUBJECT</div>
+          <div className="selected-item-subject-title">SUBJECT INFORMATION</div>
           <div className="selected-item-subject-key">Subject</div>
           <div className="selected-item-subject-value">
             {selectedSubject.subject}
@@ -293,20 +343,235 @@ const Teachers = () => {
       );
     }
   };
+  const onChangeNameHandler = (e) => {
+    e.preventDefault();
+    if (e.target.value.length <= 10) setNewTeacherName(e.target.value);
+  };
+  const onChangeAgeHandler = (e) => {
+    e.preventDefault();
+    if (isNaN(e.target.value - 1)) return;
+    if (e.target.value < 80) setNewTeacherAge(e.target.value);
+  };
+  const onChangeSubjectHandler = (e) => {
+    e.preventDefault();
+    setNewTeacherSbId(e.target.value);
+  };
+  const onChangeKeywordHandler = (e) => {
+    e.preventDefault();
+    setFilterKeyword(e.target.value);
+  };
+  const onClickNoitemHandler = (e) => {
+    e.preventDefault();
+    setFilterNoitem(!filterNoitem);
+  };
   const selectedItem = () => {
     if (selectedTeacher !== null && selectedSubject !== null) {
       return (
         <div className="selected-item">
-          {saveMessage()}
           {teacherInfo()}
           {subjectInfo()}
           {changeBtn()}
         </div>
       );
+    } else if (inpuVisible) {
+      return (
+        <div className="add-form">
+          <div className="add-form-title">
+            {(modifyItem && "Modify") || "Register"} a teacher
+          </div>
+          <div className="add-form-label">Name</div>
+          <div className="add-form-input">
+            <input
+              type="text"
+              id="teacherName"
+              value={newTeacherName}
+              placeholder="Name"
+              onChange={onChangeNameHandler}
+            />
+          </div>
+          <div className="add-form-label">Age</div>
+          <div className="add-form-input">
+            <input
+              type="text"
+              name="teacherAge"
+              value={newTeacherAge}
+              placeholder="Age"
+              onChange={onChangeAgeHandler}
+            />
+          </div>
+          <div className="add-form-label">Subject</div>
+          <div className="add-form-input">
+            <select onChange={onChangeSubjectHandler} value={newTeacherSbId}>
+              <option value="0">NONE</option>
+              {[]
+                .concat(subjects.listSubjects.items)
+                .sort(sortDate("endApply"))
+                .filter(function (obj) {
+                  return obj.id !== "0";
+                })
+                .filter(function (obj) {
+                  return obj.tcId === "0" || obj.tcId === newTeacherId;
+                })
+                .map(function (subject, index) {
+                  return (
+                    <option key={index} value={subject.id}>
+                      {subject.subject}
+                    </option>
+                  );
+                })}
+            </select>
+          </div>
+          {validationMessage !== null && (
+            <div className="validation-message">{validationMessage}</div>
+          )}
+          <div className="add-form-btns">
+            <button
+              className="add-form-confirm"
+              onClick={async (e) => {
+                e.preventDefault();
+                if (String(newTeacherName).length < 3) {
+                  setValidationMessage("Name is minimum 3 letters.");
+                  return;
+                }
+                if (newTeacherAge < 15) {
+                  setValidationMessage("Age is minimum 15.");
+                  return;
+                }
+                setValidationMessage(null);
+
+                if (modifyItem) {
+                  const inputTeacher = {
+                    id: newTeacherId,
+                    name: newTeacherName,
+                    age: newTeacherAge,
+                    sbId: newTeacherSbId,
+                  };
+                  await doUpdateTeacher({
+                    variables: {
+                      input: inputTeacher,
+                    },
+                  }).then(async () => {
+                    if (newTeacherSbId !== "0") {
+                      await doUpdateSubject({
+                        variables: {
+                          input: { id: oldTeacherSbId, tcId: "0" },
+                        },
+                      }).then(async () => {
+                        await doUpdateSubject({
+                          variables: {
+                            input: {
+                              id: newTeacherSbId,
+                              tcId: inputTeacher.id,
+                            },
+                          },
+                        });
+                        await sbjRefetch().then(async () => {
+                          await tcRefetch().then(() => {
+                            setNewTeacherAge("");
+                            setNewTeacherName("");
+                            setNewTeacherSbId("0");
+                            setInpuVisible(false);
+                          });
+                        });
+                      });
+                    } else {
+                      await doUpdateSubject({
+                        variables: {
+                          input: { id: oldTeacherSbId, tcId: "0" },
+                        },
+                      }).then(async () => {
+                        await sbjRefetch().then(async () => {
+                          await tcRefetch().then(() => {
+                            setNewTeacherAge("");
+                            setNewTeacherName("");
+                            setNewTeacherSbId("0");
+                            setInpuVisible(false);
+                          });
+                        });
+                      });
+                    }
+                  });
+                } else {
+                  const inputTeacher = {
+                    id: uuidv4(),
+                    name: newTeacherName,
+                    age: newTeacherAge,
+                    sbId: newTeacherSbId,
+                  };
+                  await doCreateTeacher({
+                    variables: {
+                      input: inputTeacher,
+                    },
+                  }).then(async () => {
+                    if (newTeacherSbId !== "0") {
+                      await doUpdateSubject({
+                        variables: {
+                          input: { id: newTeacherSbId, tcId: inputTeacher.id },
+                        },
+                      }).then(async () => {
+                        await sbjRefetch().then(async () => {
+                          await tcRefetch().then(() => {
+                            setNewTeacherAge("");
+                            setNewTeacherName("");
+                            setNewTeacherSbId("0");
+                            setInpuVisible(false);
+                          });
+                        });
+                      });
+                    } else {
+                      await sbjRefetch().then(async () => {
+                        await tcRefetch().then(() => {
+                          setNewTeacherAge("");
+                          setNewTeacherName("");
+                          setNewTeacherSbId("0");
+                          setInpuVisible(false);
+                        });
+                      });
+                    }
+                  });
+                }
+              }}
+            >
+              CONFIRM
+            </button>
+            <button
+              className="add-form-cancel"
+              onClick={() => {
+                setNewTeacherAge("");
+                setNewTeacherName("");
+                setNewTeacherSbId("0");
+                setValidationMessage(null);
+                setInpuVisible(false);
+              }}
+            >
+              CANCEL
+            </button>
+          </div>
+        </div>
+      );
     } else {
       return (
         <div className="add-btn-wrap">
-          <div className="add-btn">add teacher</div>
+          <input
+            type="text"
+            className="filter-keyword-input"
+            onChange={onChangeKeywordHandler}
+            value={filterKeyword}
+          />
+          <div
+            className={"filter-noitem" + ((filterNoitem && "-selected") || "")}
+            onClick={onClickNoitemHandler}
+          >
+            <div className="custom-label">No subject</div>
+          </div>
+          <div
+            className="add-btn"
+            onClick={() => {
+              setInpuVisible(true);
+            }}
+          >
+            Register
+          </div>
         </div>
       );
     }
@@ -342,23 +607,43 @@ const Teachers = () => {
                   onClick={subjectSelectHandler.bind(this, subject)}
                 >
                   <div className="subject-type">
-                    SUBJECT [ {subject.StudentsInfo.items.length} /{" "}
-                    {subject.total} ]
+                    SUBJECT [{" "}
+                    {"[ " +
+                      subject.StudentsInfo.items.length +
+                      " / " +
+                      subject.total +
+                      " ]"}
+                    <span className="subject-apply-text">
+                      {" " +
+                        String(subject.startApply).substr(2, 2) +
+                        "/" +
+                        String(subject.startApply).substr(4, 2) +
+                        "/" +
+                        String(subject.startApply).substr(6, 2)}{" "}
+                      ~{" "}
+                      {String(subject.endApply).substr(2, 2) +
+                        "/" +
+                        String(subject.endApply).substr(4, 2) +
+                        "/" +
+                        String(subject.endApply).substr(6, 2)}
+                    </span>
                   </div>
                   <div className="subject-subject">{subject.subject}</div>
-                  <div className="subject-name">{subject.TeacherInfo.name}</div>
+                  <div className="subject-teacher">
+                    {subject.TeacherInfo.name}
+                  </div>
                   <div className="subject-apply">
-                    {String(subject.startApply).substr(2, 2) +
+                    {String(subject.startDay).substr(2, 2) +
                       "/" +
-                      String(subject.startApply).substr(4, 2) +
+                      String(subject.startDay).substr(4, 2) +
                       "/" +
-                      String(subject.startApply).substr(6, 2)}{" "}
+                      String(subject.startDay).substr(6, 2)}{" "}
                     ~{" "}
-                    {String(subject.endApply).substr(2, 2) +
+                    {String(subject.endDay).substr(2, 2) +
                       "/" +
-                      String(subject.endApply).substr(4, 2) +
+                      String(subject.endDay).substr(4, 2) +
                       "/" +
-                      String(subject.endApply).substr(6, 2)}
+                      String(subject.endDay).substr(6, 2)}
                   </div>
                   <div className="subject-indate">{subject.updatedAt}</div>
                 </div>
@@ -373,9 +658,41 @@ const Teachers = () => {
             .concat(teachers.listTeachers.items)
             .sort(sortCreatedAt("updatedAt", "desc"))
             .sort(sortStarted())
-            .sort(sortSbId())
+            .sort(sortSbId("sbId"))
             .filter((obj) => {
               return obj.id !== "0";
+            })
+            .filter((obj) => {
+              if (filterNoitem) return true;
+              return obj.sbId !== "0";
+            })
+            .filter((obj) => {
+              if (filterKeyword === "") return true;
+              for (
+                var i = 0;
+                i < obj.name.length - filterKeyword.length + 1;
+                i++
+              ) {
+                if (
+                  String(obj.name)
+                    .substr(i, filterKeyword.length)
+                    .toUpperCase() === filterKeyword.toUpperCase()
+                )
+                  return true;
+              }
+              for (
+                var i = 0;
+                i < obj.SubjectInfo.subject.length - filterKeyword.length + 1;
+                i++
+              ) {
+                if (
+                  String(obj.SubjectInfo.subject)
+                    .substr(i, filterKeyword.length)
+                    .toUpperCase() === filterKeyword.toUpperCase()
+                )
+                  return true;
+              }
+              return false;
             })
             .map(function (teacher, index) {
               if (selectedTeacher !== null) {

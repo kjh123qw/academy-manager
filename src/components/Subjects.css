@@ -6,7 +6,7 @@
 }
 .list-subject-wrap .item-subject {
   display: grid;
-  grid-template-columns: 150px 1fr;
+  grid-template-columns: 130px 1fr;
   gap: 5px;
   background-color: white;
   border: 1px solid rgb(27, 129, 197);
@@ -28,7 +28,7 @@
 }
 .item-subject-selected {
   display: grid;
-  grid-template-columns: 150px 1fr;
+  grid-template-columns: 130px 1fr;
   gap: 5px;
   background-color: rgb(210, 221, 230);
   border: 1px solid rgb(8, 93, 149);
@@ -47,7 +47,7 @@
 }
 .item-subject-started {
   display: grid;
-  grid-template-columns: 150px 1fr;
+  grid-template-columns: 130px 1fr;
   gap: 5px;
   background-color: rgb(192, 192, 192);
   border: 1px solid rgb(136, 136, 136);
@@ -68,7 +68,7 @@
   grid-column-end: 2;
   grid-row-start: 2;
   grid-row-end: 4;
-  padding: 5px 10px;
+  padding: 5px 5px;
   color: rgb(0, 64, 107);
   font-size: 1.1em;
   font-weight: bold;
@@ -87,6 +87,11 @@
   color: #555;
   font-size: 0.9em;
 }
+.subject-apply-text {
+  font-size: 0.9em;
+  color: #eee;
+  font-weight: normal;
+}
 .subject-indate {
   grid-column-start: 1;
   grid-column-end: 3;
@@ -94,4 +99,11 @@
   padding: 2px 2px 2px 5px;
   color: #777;
   font-size: 0.9em;
+}
+.before-selected-subject {
+  background-color: rgb(172, 190, 206) !important;
+  border: 2px solid #000 !important;
+}
+.before-selected-subject .subject-type {
+  background-color: rgb(3, 79, 129) !important;
 }

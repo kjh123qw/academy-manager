@@ -5,17 +5,65 @@
 }
 .add-btn-wrap {
   display: grid;
-  grid-template-columns: 1fr;
-  padding: 10px 20px 5px;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 10px 5px 5px;
+  width: 320px;
   align-items: center;
-  justify-items: end;
+  justify-items: center;
+}
+.filter-keyword-input {
+  width: 100px;
+  height: 30px;
+  padding: 3px;
+  font-size: 1.1em;
+  line-height: 28px;
+  justify-self: start;
+}
+.filter-noitem {
+  width: 95px;
+  height: 30px;
+  padding: 5px;
+  border-radius: 15px;
+  background-color: #999;
+  align-items: center;
+  font-size: 1em;
+  cursor: pointer;
+}
+.filter-noitem .custom-label {
+  height: 20px;
+  color: white;
+  line-height: 18px;
+  text-align: center;
+}
+.filter-noitem:hover {
+  background-color: rgb(170, 170, 170);
+}
+.filter-noitem-selected {
+  width: 95px;
+  height: 30px;
+  padding: 5px;
+  border-radius: 15px;
+  background-color: red;
+  align-items: center;
+  font-size: 1em;
+  cursor: pointer;
+}
+.filter-noitem-selected .custom-label {
+  height: 20px;
+  color: white;
+  line-height: 18px;
+  text-align: center;
+}
+.filter-noitem-selected:hover {
+  background-color: rgb(255, 45, 45);
 }
 .add-btn-wrap .add-btn {
-  width: 120px;
+  grid-column-start: 3;
+  width: 95px;
   height: 30px;
   border-radius: 15px;
   background-color: rgb(194, 126, 16);
-  color: #eee;
+  color: #fff;
   line-height: 28px;
   font-size: 1em;
   text-align: center;
@@ -32,7 +80,7 @@
 }
 .list-student-wrap .item-student {
   display: grid;
-  grid-template-columns: 150px 1fr;
+  grid-template-columns: 130px 1fr;
   gap: 5px;
   background-color: white;
   border: 1px solid rgb(21, 163, 144);
@@ -54,7 +102,7 @@
 }
 .item-student-selected {
   display: grid;
-  grid-template-columns: 150px 1fr;
+  grid-template-columns: 130px 1fr;
   gap: 5px;
   background-color: rgb(208, 228, 221);
   border: 1px solid rgb(8, 119, 104);
@@ -139,7 +187,7 @@
 }
 .selected-item-info {
   display: grid;
-  grid-template-columns: 100px 50px 1fr;
+  grid-template-columns: 100px 65px 1fr;
   margin-bottom: 3px;
   gap: 5px;
   align-items: center;
@@ -171,6 +219,40 @@
   padding: 2px 2px 2px 5px;
   color: #333;
   font-size: 0.9em;
+}
+.modify-delete-btn {
+  grid-column-start: 2;
+  grid-column-end: 4;
+  display: grid;
+  grid-template-columns: 54px 54px;
+}
+.selected-item-modify {
+  width: 50px;
+  height: 26px;
+  background-color: #aaa;
+  color: #eee;
+  font-size: 1.1em;
+  line-height: 28px;
+  text-align: center;
+  justify-self: start;
+  cursor: pointer;
+}
+.selected-item-modify:hover {
+  background-color: #888;
+}
+.selected-item-delete {
+  width: 50px;
+  height: 26px;
+  background-color: rgb(255, 0, 0);
+  color: #eee;
+  font-size: 1.1em;
+  line-height: 28px;
+  text-align: center;
+  justify-self: start;
+  cursor: pointer;
+}
+.selected-item-delete:hover {
+  background-color: rgb(255, 75, 75);
 }
 .selected-item-subject {
   grid-column-start: 1;
@@ -280,9 +362,98 @@
   background-color: rgba(123, 137, 144, 0.15);
 }
 
-/* SUBJECT LIST */
-
-/* END SUBJECT LIST */
+/* ADD FORM */
+.add-form {
+  position: sticky;
+  top: 0;
+  display: grid;
+  grid-template-columns: 0.5fr 1fr;
+  margin-top: 2px;
+  padding: 5px 10px 5px;
+  align-items: center;
+  justify-items: center;
+  background-color: #fff;
+  border: 1px solid #555;
+  z-index: 6;
+}
+.add-form-title {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+.add-form-label {
+  padding: 3px;
+  color: #333;
+  font-size: 0.8em;
+}
+.add-form-input,
+.add-form-period-input {
+  padding: 3px 10px;
+}
+.add-form-input input {
+  width: 150px;
+  height: 30px;
+  padding: 2px;
+}
+.add-form-period-input input {
+  width: 80px;
+  height: 30px;
+  padding: 2px;
+}
+.add-form-input select {
+  display: block;
+  width: 150px;
+  height: 30px;
+}
+.add-form-btns {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 3px 10px 3px;
+  align-items: center;
+  justify-items: center;
+}
+.add-form-btns button {
+  display: block;
+  width: 120px;
+  height: 35px;
+  line-height: 33px;
+}
+.add-form-confirm {
+  border: 1px solid rgb(31, 118, 199);
+  background-color: rgba(255, 255, 255, 0.3);
+  color: rgb(31, 118, 199);
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+}
+.add-form-confirm:hover {
+  background-color: rgba(31, 118, 199, 0.15);
+}
+.add-form-cancel {
+  border: 1px solid rgb(123, 137, 144);
+  background-color: rgba(255, 255, 255, 0.3);
+  color: rgb(123, 137, 144);
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+}
+.add-form-cancel:hover {
+  background-color: rgba(123, 137, 144, 0.15);
+}
+.validation-message {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  width: 260px;
+  padding: 3px;
+  background-color: rgba(255, 0, 0, 0.1);
+  font-size: 0.9em;
+  text-align: center;
+}
+/* END ADD FORM */
 .list-student-wrap-nouse .item-student:hover {
   animation-name: studentHover;
   animation-duration: 1s;

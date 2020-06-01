@@ -1,18 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
+import { v4 as uuidv4 } from "uuid";
 import { listTeachers, listSubjects } from "../graphql/queries";
-import { updateSubject, updateTeacher } from "../graphql/mutations";
+import {
+  updateSubject,
+  updateTeacher,
+  createSubject,
+  deleteSubject,
+} from "../graphql/mutations";
+import { AiOutlineEdit, AiFillDelete } from "react-icons/ai";
 
 import sortStarted from "../sortStarted";
 import sortSbId from "../sortSbId";
 import filterApply from "../filterApply";
 import sortDate from "../sortDate";
 import sortCreatedAt from "../sortCreatedAt";
+import sortSjStarted from "../sortSjStarted";
 import blankImage from "../images/blank-profile.png";
 import "./Teachers.css";
 import "./Subjects.css";
-import sortSjStarted from "../sortSjStarted";
 
 const Subjects = (props) => {
   const [selectedTeacher, setSelectedTeacher] = useState(null);
@@ -21,6 +28,19 @@ const Subjects = (props) => {
   const [saveSetting, setSaveSetting] = useState(0);
   const [inpuVisible, setInpuVisible] = useState(false);
   const [originalTeacher, setOriginalTeacher] = useState();
+  const [oldSubjectTcId, setOldSubjectTcId] = useState("");
+  const [newSubjectId, setNewSubjectId] = useState("");
+  const [newSubjectTitle, setNewSubjectTitle] = useState("");
+  const [newSubjectTotal, setNewSubjectTotal] = useState("");
+  const [newSubjectStartApply, setNewSubjectStartApply] = useState("");
+  const [newSubjectEndApply, setNewSubjectEndApply] = useState("");
+  const [newSubjectStartDay, setNewSubjectStartDay] = useState("");
+  const [newSubjectEndDay, setNewSubjectEndDay] = useState("");
+  const [newSubjectTcId, setNewSubjectTcId] = useState("0");
+  const [validationMessage, setValidationMessage] = useState(null);
+  const [filterKeyword, setFilterKeyword] = useState("");
+  const [filterNoitem, setFilterNoitem] = useState(true);
+  const [modifyItem, setModifyItem] = useState(false);
 
   let date = new Date();
   let year = date.getFullYear();
@@ -39,6 +59,14 @@ const Subjects = (props) => {
     doUpdateSubject,
     { loading: updateSubjectLoading, error: updateSubjectError },
   ] = useMutation(gql(updateSubject));
+  const [
+    doCreateSubject,
+    { loading: createSubjectLoading, error: createSubjectError },
+  ] = useMutation(gql(createSubject));
+  const [
+    doDeleteSubject,
+    { loading: deleteSubjectLoading, error: deleteSubjectError },
+  ] = useMutation(gql(deleteSubject));
   const {
     loading: stuLoading,
     error: stuError,
@@ -63,7 +91,13 @@ const Subjects = (props) => {
         <div>Refetching...</div>
       </div>
     );
-  if (stuLoading || sbjLoading || updateTeacherLoading || updateSubjectLoading)
+  if (
+    stuLoading ||
+    sbjLoading ||
+    updateTeacherLoading ||
+    updateSubjectLoading ||
+    deleteSubjectLoading
+  )
     return (
       <div className="loading-layer">
         <div>Loading...</div>
@@ -82,36 +116,28 @@ const Subjects = (props) => {
   const openChangeSubjectHandler = (e) => {
     e.preventDefault();
     setSubjectSelect(true);
+    setOriginalTeacher(selectedSubject.TeacherInfo);
   };
   const closeSelectedItem = (e) => {
     e.preventDefault();
     setSelectedTeacher(null);
+    setSelectedSubject(null);
     setSubjectSelect(false);
   };
   const subjectSelectHandler = (subject, e) => {
     e.preventDefault();
+    setInpuVisible(false);
+    setNewSubjectTitle("");
+    setNewSubjectTotal("");
+    setNewSubjectStartApply("");
+    setNewSubjectEndApply("");
+    setNewSubjectStartDay("");
+    setNewSubjectEndDay("");
+    setNewSubjectTcId("0");
+    setValidationMessage(null);
     setSelectedSubject(subject);
     setSelectedTeacher(subject.TeacherInfo);
     setOriginalTeacher(subject.TeacherInfo);
-  };
-  const inputLayer = () => {
-    if (inpuVisible) {
-      return (
-        <div className="input-layer">
-          <form>
-            <div className="input-layer-title"></div>
-            <div className="input-layer-key"></div>
-            <div className="input-layer-input">
-              <input type="text" placeholder="Name" />
-            </div>
-            <div className="input-layer-key"></div>
-            <div className="input-layer-input">
-              <input type="text" placeholder="Age" />
-            </div>
-          </form>
-        </div>
-      );
-    }
   };
   const saveSubjectHandler = async (e) => {
     e.preventDefault();
@@ -131,7 +157,7 @@ const Subjects = (props) => {
               input: { id: selectedSubject.id, tcId: selectedTeacher.id },
             },
           }).then(async (updatedata) => {
-            setSelectedTeacher(updatedata.data.updateSubject);
+            setSelectedSubject(updatedata.data.updateSubject);
             await sbjRefetch().then(async () => {
               await tcRefetch().then(() => {
                 setSubjectSelect(false);
@@ -142,28 +168,109 @@ const Subjects = (props) => {
       });
     }
   };
-  const teacherInfo = () => {
+  const subjectInfo = () => {
     if (!subjectSelect) {
       return (
         <div className="selected-item-info">
-          <div className="selected-item-type">TEACHER</div>
+          <div className="selected-item-type">SUBJECT</div>
           <div className="selected-item-photo">
             <img src={blankImage} alt="profile photo" />
           </div>
-          <div className="selected-item-key">Name</div>
-          <div className="selected-item-value">{selectedTeacher.name}</div>
-          <div className="selected-item-key">Age</div>
-          <div className="selected-item-value">{selectedTeacher.age}</div>
-          <div className="selected-item-key">Job</div>
-          <div className="selected-item-value">Businessman</div>
-          <div className="selected-item-key">Date</div>
+          <div className="selected-item-key">Title</div>
+          <div className="selected-item-value">{selectedSubject.subject}</div>
+          <div className="selected-item-key">Applicant</div>
           <div className="selected-item-value">
-            {String(selectedTeacher.createdAt).substr(0, 4) +
-              "/" +
-              String(selectedTeacher.createdAt).substr(5, 2) +
-              "/" +
-              String(selectedTeacher.createdAt).substr(8, 2)}
+            {"[ " +
+              selectedSubject.StudentsInfo.items.length +
+              " / " +
+              selectedSubject.total +
+              " ]"}
           </div>
+          <div className="selected-item-key">Apply Period</div>
+          <div className="selected-item-value">
+            {String(selectedSubject.startApply).substr(0, 4) +
+              "/" +
+              String(selectedSubject.startApply).substr(4, 2) +
+              "/" +
+              String(selectedSubject.startApply).substr(6, 2) +
+              " ~ " +
+              String(selectedSubject.endApply).substr(0, 4) +
+              "/" +
+              String(selectedSubject.endApply).substr(4, 2) +
+              "/" +
+              String(selectedSubject.endApply).substr(6, 2)}
+          </div>
+          <div className="selected-item-key">Training Period</div>
+          <div className="selected-item-value">
+            {String(selectedSubject.startDay).substr(0, 4) +
+              "/" +
+              String(selectedSubject.startDay).substr(4, 2) +
+              "/" +
+              String(selectedSubject.startDay).substr(6, 2) +
+              " ~ " +
+              String(selectedSubject.endDay).substr(0, 4) +
+              "/" +
+              String(selectedSubject.endDay).substr(4, 2) +
+              "/" +
+              String(selectedSubject.endDay).substr(6, 2)}
+          </div>
+          <div className="modify-delete-btn">
+            <div
+              className="selected-item-modify"
+              onClick={async () => {
+                if (window.confirm("Are you sure to modify?")) {
+                  setOldSubjectTcId(selectedSubject.tcId);
+                  setNewSubjectId(selectedSubject.id);
+                  setNewSubjectTitle(selectedSubject.subject);
+                  setNewSubjectTotal(selectedSubject.total);
+                  setNewSubjectStartApply(selectedSubject.startApply);
+                  setNewSubjectEndApply(selectedSubject.endApply);
+                  setNewSubjectStartDay(selectedSubject.startDay);
+                  setNewSubjectEndDay(selectedSubject.endDay);
+                  setNewSubjectTcId(selectedSubject.tcId);
+                  setSelectedSubject(null);
+                  setModifyItem(true);
+                  setInpuVisible(true);
+                }
+              }}
+            >
+              <AiOutlineEdit />
+            </div>
+            <div
+              className="selected-item-delete"
+              onClick={async () => {
+                if (window.confirm("Are you sure to delete?")) {
+                  await doDeleteSubject({
+                    variables: {
+                      input: { id: selectedSubject.id },
+                    },
+                  }).then(async () => {
+                    await doUpdateTeacher({
+                      variables: {
+                        input: { id: selectedSubject.tcId, sbId: "0" },
+                      },
+                    }).then(async () => {
+                      await sbjRefetch().then(async () => {
+                        await tcRefetch().then(() => {
+                          setSelectedSubject(null);
+                        });
+                      });
+                    });
+                  });
+                }
+              }}
+            >
+              <AiFillDelete />
+            </div>
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div className="selected-item-info">
+          <div className="selected-item-type">SUBJECT</div>
+          <div className="selected-item-key">Name</div>
+          <div className="selected-item-value">{selectedSubject.subject}</div>
         </div>
       );
     }
@@ -184,7 +291,7 @@ const Subjects = (props) => {
         </div>
       );
     } else {
-      if (selectedSubject.id === "0") {
+      if (selectedTeacher.id === "0") {
         return (
           <div className="selected-item-btns">
             <div
@@ -221,72 +328,353 @@ const Subjects = (props) => {
       }
     }
   };
-  const subjectInfo = () => {
-    if (selectedSubject.id === "0") {
+  const teacherInfo = () => {
+    if (selectedTeacher.id === "0") {
       return (
         <div className="selected-item-subject">
-          <div className="selected-item-subject-title">SUBJECT</div>
-          <div className="selected-item-subject-key">Subject</div>
+          <div className="selected-item-subject-title">TEACHER INFORMATION</div>
+          <div className="selected-item-subject-key">Name</div>
           <div className="selected-item-subject-value">
-            {selectedSubject.subject}
+            {selectedTeacher.name}
           </div>
-          <div className="selected-item-subject-key">Applicant</div>
-          <div className="selected-item-subject-value">-</div>
-          <div className="selected-item-subject-key">Start</div>
-          <div className="selected-item-subject-value">-</div>
-          <div className="selected-item-subject-key">End</div>
-          <div className="selected-item-subject-value">-</div>
         </div>
       );
     } else {
       return (
         <div className="selected-item-subject">
-          <div className="selected-item-subject-title">SUBJECT</div>
-          <div className="selected-item-subject-key">Subject</div>
+          <div className="selected-item-subject-title">TEACHER INFORMATION</div>
+          <div className="selected-item-subject-key">Name</div>
           <div className="selected-item-subject-value">
-            {selectedSubject.subject}
-          </div>
-          <div className="selected-item-subject-key">Applicant</div>
-          <div className="selected-item-subject-value">
-            {"[ " +
-              selectedSubject.StudentsInfo.items.length +
-              " / " +
-              selectedSubject.total +
-              " ]"}
-          </div>
-          <div className="selected-item-subject-key">Start</div>
-          <div className="selected-item-subject-value">
-            {String(selectedSubject.startDay).substr(0, 4) +
-              "/" +
-              String(selectedSubject.startDay).substr(4, 2) +
-              "/" +
-              String(selectedSubject.startDay).substr(6, 2)}
-          </div>
-          <div className="selected-item-subject-key">End</div>
-          <div className="selected-item-subject-value">
-            {String(selectedSubject.endDay).substr(0, 4) +
-              "/" +
-              String(selectedSubject.endDay).substr(4, 2) +
-              "/" +
-              String(selectedSubject.endDay).substr(6, 2)}
+            {selectedTeacher.name}
           </div>
         </div>
       );
     }
   };
+  const onChangeTitleHandler = (e) => {
+    e.preventDefault();
+    if (e.target.value.length <= 14) setNewSubjectTitle(e.target.value);
+  };
+  const onChangeTotalHandler = (e) => {
+    e.preventDefault();
+    if (isNaN(e.target.value - 1)) return;
+    if (e.target.value < 100) setNewSubjectTotal(e.target.value);
+  };
+  const onChangeStartApplyHandler = (e) => {
+    e.preventDefault();
+    if (isNaN(e.target.value - 1)) return;
+    if (e.target.value.length <= 8) setNewSubjectStartApply(e.target.value);
+  };
+  const onChangeEndApplyHandler = (e) => {
+    e.preventDefault();
+    if (isNaN(e.target.value - 1)) return;
+    if (e.target.value.length <= 8) setNewSubjectEndApply(e.target.value);
+  };
+  const onChangeStartDayHandler = (e) => {
+    e.preventDefault();
+    if (isNaN(e.target.value - 1)) return;
+    if (e.target.value.length <= 8) setNewSubjectStartDay(e.target.value);
+  };
+  const onChangeEndDayHandler = (e) => {
+    e.preventDefault();
+    if (isNaN(e.target.value - 1)) return;
+    if (e.target.value.length <= 8) setNewSubjectEndDay(e.target.value);
+  };
+  const onChangeTcIdHandler = (e) => {
+    e.preventDefault();
+    setNewSubjectTcId(e.target.value);
+  };
+  const onChangeKeywordHandler = (e) => {
+    e.preventDefault();
+    console.log(e.target.value);
+    setFilterKeyword(e.target.value);
+  };
+  const onClickNoitemHandler = (e) => {
+    e.preventDefault();
+    setFilterNoitem(!filterNoitem);
+  };
   const selectedItem = () => {
     if (selectedTeacher !== null && selectedSubject !== null) {
       return (
         <div className="selected-item">
-          {teacherInfo()}
           {subjectInfo()}
+          {teacherInfo()}
           {changeBtn()}
+        </div>
+      );
+    } else if (inpuVisible) {
+      return (
+        <div className="add-form">
+          <div className="add-form-title">
+            {(modifyItem && "Modify") || "Register"} a subject
+          </div>
+          <div className="add-form-label">Title</div>
+          <div className="add-form-input">
+            <input
+              type="text"
+              id="subjectTitle"
+              value={newSubjectTitle}
+              placeholder="Title"
+              onChange={onChangeTitleHandler}
+            />
+          </div>
+          <div className="add-form-label">Applicant</div>
+          <div className="add-form-input">
+            <input
+              type="text"
+              name="subjectTotal"
+              value={newSubjectTotal}
+              placeholder="Maximum 10"
+              onChange={onChangeTotalHandler}
+            />
+          </div>
+          <div className="add-form-label">Apply Period</div>
+          <div className="add-form-period-input">
+            <input
+              type="text"
+              name="subjectSA"
+              value={newSubjectStartApply}
+              placeholder="20201021"
+              onChange={onChangeStartApplyHandler}
+            />
+            ~
+            <input
+              type="text"
+              name="subjectEA"
+              value={newSubjectEndApply}
+              placeholder="20201214"
+              onChange={onChangeEndApplyHandler}
+            />
+          </div>
+          <div className="add-form-label">Training Period</div>
+          <div className="add-form-period-input">
+            <input
+              type="text"
+              name="subjectSD"
+              value={newSubjectStartDay}
+              placeholder="20201214"
+              onChange={onChangeStartDayHandler}
+            />
+            ~
+            <input
+              type="text"
+              name="subjectED"
+              value={newSubjectEndDay}
+              placeholder="20201214"
+              onChange={onChangeEndDayHandler}
+            />
+          </div>
+          <div className="add-form-label">Teacher</div>
+          <div className="add-form-input">
+            <select onChange={onChangeTcIdHandler} value={newSubjectTcId}>
+              <option value="0">NONE</option>
+              {[]
+                .concat(teachers.listTeachers.items)
+                .sort(sortCreatedAt("updatedAt", "desc"))
+                .filter((obj) => {
+                  return obj.id !== "0";
+                })
+                .filter((obj) => {
+                  return obj.sbId === "0" || obj.sbId === newSubjectId;
+                })
+                .map(function (teacher, index) {
+                  return (
+                    <option key={index} value={teacher.id}>
+                      {teacher.name}
+                    </option>
+                  );
+                })}
+            </select>
+          </div>
+          {validationMessage !== null && (
+            <div className="validation-message">{validationMessage}</div>
+          )}
+          <div className="add-form-btns">
+            <button
+              className="add-form-confirm"
+              onClick={async (e) => {
+                e.preventDefault();
+                if (String(newSubjectTitle).length < 2) {
+                  setValidationMessage("Name is minimum 2 letters.");
+                  return;
+                }
+                if (newSubjectTotal < 10) {
+                  setValidationMessage("Minimum applicant is 10.");
+                  return;
+                }
+                if (
+                  String(newSubjectStartApply).length !== 8 ||
+                  String(newSubjectEndApply).length !== 8 ||
+                  String(newSubjectStartDay).length !== 8 ||
+                  String(newSubjectEndDay).length !== 8
+                ) {
+                  setValidationMessage("Date is 8 letters. ex) 20200917");
+                  return;
+                }
+                setValidationMessage(null);
+                if (modifyItem) {
+                  const inputSubject = {
+                    id: newSubjectId,
+                    subject: newSubjectTitle,
+                    total: newSubjectTotal,
+                    startApply: newSubjectStartApply,
+                    endApply: newSubjectEndApply,
+                    startDay: newSubjectStartDay,
+                    endDay: newSubjectEndDay,
+                    tcId: newSubjectTcId,
+                  };
+                  console.log(inputSubject);
+                  await doUpdateSubject({
+                    variables: {
+                      input: inputSubject,
+                    },
+                  }).then(async () => {
+                    if (newSubjectTcId !== "0") {
+                      await doUpdateTeacher({
+                        variables: {
+                          input: { id: oldSubjectTcId, sbId: "0" },
+                        },
+                      }).then(async () => {
+                        await doUpdateTeacher({
+                          variables: {
+                            input: {
+                              id: newSubjectTcId,
+                              sbId: inputSubject.id,
+                            },
+                          },
+                        });
+                        await sbjRefetch().then(async () => {
+                          await tcRefetch().then(() => {
+                            setNewSubjectTitle("");
+                            setNewSubjectTotal("");
+                            setNewSubjectStartApply("");
+                            setNewSubjectEndApply("");
+                            setNewSubjectStartDay("");
+                            setNewSubjectEndDay("");
+                            setNewSubjectTcId("0");
+                            setInpuVisible(false);
+                          });
+                        });
+                      });
+                    } else {
+                      await doUpdateTeacher({
+                        variables: {
+                          input: { id: oldSubjectTcId, sbId: "0" },
+                        },
+                      }).then(async () => {
+                        await sbjRefetch().then(async () => {
+                          await tcRefetch().then(() => {
+                            setNewSubjectTitle("");
+                            setNewSubjectTotal("");
+                            setNewSubjectStartApply("");
+                            setNewSubjectEndApply("");
+                            setNewSubjectStartDay("");
+                            setNewSubjectEndDay("");
+                            setNewSubjectTcId("0");
+                            setInpuVisible(false);
+                          });
+                        });
+                      });
+                    }
+                  });
+                } else {
+                  const inputSubject = {
+                    id: uuidv4(),
+                    subject: newSubjectTitle,
+                    total: newSubjectTotal,
+                    startApply: newSubjectStartApply,
+                    endApply: newSubjectEndApply,
+                    startDay: newSubjectStartDay,
+                    endDay: newSubjectEndDay,
+                    tcId: newSubjectTcId,
+                  };
+                  console.log(inputSubject);
+                  await doCreateSubject({
+                    variables: {
+                      input: inputSubject,
+                    },
+                  }).then(async () => {
+                    if (newSubjectTcId !== "0") {
+                      await doUpdateTeacher({
+                        variables: {
+                          input: { id: newSubjectTcId, sbId: inputSubject.id },
+                        },
+                      }).then(async () => {
+                        await sbjRefetch().then(async () => {
+                          await tcRefetch().then(() => {
+                            setNewSubjectTitle("");
+                            setNewSubjectTotal("");
+                            setNewSubjectStartApply("");
+                            setNewSubjectEndApply("");
+                            setNewSubjectStartDay("");
+                            setNewSubjectEndDay("");
+                            setNewSubjectTcId("0");
+                            setInpuVisible(false);
+                          });
+                        });
+                      });
+                    } else {
+                      await sbjRefetch().then(async () => {
+                        await tcRefetch().then(() => {
+                          setNewSubjectTitle("");
+                          setNewSubjectTotal("");
+                          setNewSubjectStartApply("");
+                          setNewSubjectEndApply("");
+                          setNewSubjectStartDay("");
+                          setNewSubjectEndDay("");
+                          setNewSubjectTcId("0");
+                          setInpuVisible(false);
+                        });
+                      });
+                    }
+                  });
+                }
+              }}
+            >
+              CONFIRM
+            </button>
+            <button
+              className="add-form-cancel"
+              onClick={() => {
+                setNewSubjectTitle("");
+                setNewSubjectTotal("");
+                setNewSubjectStartApply("");
+                setNewSubjectEndApply("");
+                setNewSubjectStartDay("");
+                setNewSubjectEndDay("");
+                setNewSubjectTcId("0");
+                setValidationMessage(null);
+                setInpuVisible(false);
+              }}
+            >
+              CANCEL
+            </button>
+          </div>
         </div>
       );
     } else {
       return (
         <div className="add-btn-wrap">
-          <div className="add-btn">add teacher</div>
+          <input
+            type="text"
+            className="filter-keyword-input"
+            onChange={onChangeKeywordHandler}
+            value={filterKeyword}
+          />
+          <div
+            className={"filter-noitem" + ((filterNoitem && "-selected") || "")}
+            onClick={onClickNoitemHandler}
+          >
+            <div className="custom-label">No teacher</div>
+          </div>
+          <div
+            className="add-btn"
+            onClick={() => {
+              setInpuVisible(true);
+            }}
+          >
+            Register
+          </div>
         </div>
       );
     }
@@ -301,10 +689,11 @@ const Subjects = (props) => {
           {[]
             .concat(teachers.listTeachers.items)
             .sort(sortCreatedAt("updatedAt", "desc"))
-            .sort(sortStarted())
-            .sort(sortSbId())
             .filter((obj) => {
               return obj.id !== "0";
+            })
+            .filter((obj) => {
+              return obj.sbId === "0";
             })
             .map(function (teacher, index) {
               if (selectedTeacher !== null) {
@@ -359,6 +748,38 @@ const Subjects = (props) => {
             .filter(function (obj) {
               return obj.id !== "0";
             })
+            .filter((obj) => {
+              if (filterNoitem) return true;
+              return obj.tcId !== "0";
+            })
+            .filter((obj) => {
+              if (filterKeyword === "") return true;
+              for (
+                var i = 0;
+                i < obj.subject.length - filterKeyword.length + 1;
+                i++
+              ) {
+                if (
+                  String(obj.subject)
+                    .substr(i, filterKeyword.length)
+                    .toUpperCase() === filterKeyword.toUpperCase()
+                )
+                  return true;
+              }
+              for (
+                var i = 0;
+                i < obj.TeacherInfo.name.length - filterKeyword.length + 1;
+                i++
+              ) {
+                if (
+                  String(obj.TeacherInfo.name)
+                    .substr(i, filterKeyword.length)
+                    .toUpperCase() === filterKeyword.toUpperCase()
+                )
+                  return true;
+              }
+              return false;
+            })
             .map(function (subject, index) {
               if (selectedSubject !== null) {
                 if (selectedSubject.id === subject.id) {
@@ -376,24 +797,38 @@ const Subjects = (props) => {
                   >
                     <div className="subject-type">
                       SUBJECT [ {subject.StudentsInfo.items.length} /{" "}
-                      {subject.total} ]
+                      {subject.total} ]{" "}
+                      <span className="subject-apply-text">
+                        {" " +
+                          String(subject.startApply).substr(2, 2) +
+                          "/" +
+                          String(subject.startApply).substr(4, 2) +
+                          "/" +
+                          String(subject.startApply).substr(6, 2)}{" "}
+                        ~{" "}
+                        {String(subject.endApply).substr(2, 2) +
+                          "/" +
+                          String(subject.endApply).substr(4, 2) +
+                          "/" +
+                          String(subject.endApply).substr(6, 2)}
+                      </span>
                     </div>
                     <div className="subject-subject">{subject.subject}</div>
-                    <div className="subject-name">
+                    <div className="subject-teacher">
                       {subject.TeacherInfo.name}
                     </div>
                     <div className="subject-apply">
-                      {String(subject.startApply).substr(2, 2) +
+                      {String(subject.startDay).substr(2, 2) +
                         "/" +
-                        String(subject.startApply).substr(4, 2) +
+                        String(subject.startDay).substr(4, 2) +
                         "/" +
-                        String(subject.startApply).substr(6, 2)}{" "}
+                        String(subject.startDay).substr(6, 2)}{" "}
                       ~{" "}
-                      {String(subject.endApply).substr(2, 2) +
+                      {String(subject.endDay).substr(2, 2) +
                         "/" +
-                        String(subject.endApply).substr(4, 2) +
+                        String(subject.endDay).substr(4, 2) +
                         "/" +
-                        String(subject.endApply).substr(6, 2)}
+                        String(subject.endDay).substr(6, 2)}
                     </div>
                     <div className="subject-indate">{subject.updatedAt}</div>
                   </div>
@@ -410,17 +845,17 @@ const Subjects = (props) => {
                       {subject.TeacherInfo.name}
                     </div>
                     <div className="subject-apply">
-                      {String(subject.startApply).substr(2, 2) +
+                      {String(subject.startDay).substr(2, 2) +
                         "/" +
-                        String(subject.startApply).substr(4, 2) +
+                        String(subject.startDay).substr(4, 2) +
                         "/" +
-                        String(subject.startApply).substr(6, 2)}{" "}
+                        String(subject.startDay).substr(6, 2)}{" "}
                       ~{" "}
-                      {String(subject.endApply).substr(2, 2) +
+                      {String(subject.endDay).substr(2, 2) +
                         "/" +
-                        String(subject.endApply).substr(4, 2) +
+                        String(subject.endDay).substr(4, 2) +
                         "/" +
-                        String(subject.endApply).substr(6, 2)}
+                        String(subject.endDay).substr(6, 2)}
                     </div>
                     <div className="subject-indate">{subject.updatedAt}</div>
                   </div>
