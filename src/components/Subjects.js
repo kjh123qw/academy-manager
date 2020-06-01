@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import { v4 as uuidv4 } from "uuid";
@@ -21,11 +21,10 @@ import blankImage from "../images/blank-profile.png";
 import "./Teachers.css";
 import "./Subjects.css";
 
-const Subjects = (props) => {
+const Subjects = () => {
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [subjectSelect, setSubjectSelect] = useState(false);
-  const [saveSetting, setSaveSetting] = useState(0);
   const [inpuVisible, setInpuVisible] = useState(false);
   const [originalTeacher, setOriginalTeacher] = useState();
   const [oldSubjectTcId, setOldSubjectTcId] = useState("");
@@ -41,6 +40,7 @@ const Subjects = (props) => {
   const [filterKeyword, setFilterKeyword] = useState("");
   const [filterNoitem, setFilterNoitem] = useState(true);
   const [modifyItem, setModifyItem] = useState(false);
+  const [searchLength, setSearchLength] = useState(0);
 
   let date = new Date();
   let year = date.getFullYear();
@@ -652,32 +652,80 @@ const Subjects = (props) => {
           </div>
         </div>
       );
-    } else {
-      return (
-        <div className="add-btn-wrap">
-          <input
-            type="text"
-            className="filter-keyword-input"
-            onChange={onChangeKeywordHandler}
-            value={filterKeyword}
-          />
-          <div
-            className={"filter-noitem" + ((filterNoitem && "-selected") || "")}
-            onClick={onClickNoitemHandler}
-          >
-            <div className="custom-label">No teacher</div>
-          </div>
-          <div
-            className="add-btn"
-            onClick={() => {
-              setInpuVisible(true);
-            }}
-          >
-            Register
-          </div>
-        </div>
-      );
     }
+  };
+
+  const topFilter = () => {
+    return (
+      <div className="add-btn-wrap">
+        <div className="top-info">
+          Subject List :
+          {
+            []
+              .concat(subjects.listSubjects.items)
+              .sort(sortDate("endApply"))
+              .sort(sortSbId("tcId"))
+              .sort(sortSjStarted())
+              .filter(function (obj) {
+                return obj.id !== "0";
+              })
+              .filter((obj) => {
+                if (filterNoitem) return true;
+                return obj.tcId !== "0";
+              })
+              .filter((obj) => {
+                if (filterKeyword === "") return true;
+                for (
+                  var i = 0;
+                  i < obj.subject.length - filterKeyword.length + 1;
+                  i++
+                ) {
+                  if (
+                    String(obj.subject)
+                      .substr(i, filterKeyword.length)
+                      .toUpperCase() === filterKeyword.toUpperCase()
+                  )
+                    return true;
+                }
+                for (
+                  var i = 0;
+                  i < obj.TeacherInfo.name.length - filterKeyword.length + 1;
+                  i++
+                ) {
+                  if (
+                    String(obj.TeacherInfo.name)
+                      .substr(i, filterKeyword.length)
+                      .toUpperCase() === filterKeyword.toUpperCase()
+                  )
+                    return true;
+                }
+                return false;
+              }).length
+          }
+        </div>
+        <input
+          type="text"
+          className="filter-keyword-input"
+          onChange={onChangeKeywordHandler}
+          value={filterKeyword}
+        />
+        <div
+          className={"filter-noitem" + ((filterNoitem && "-selected") || "")}
+          onClick={onClickNoitemHandler}
+        >
+          <div className="custom-label">No teacher</div>
+        </div>
+        <div
+          className="add-btn"
+          onClick={() => {
+            setInpuVisible(true);
+            setSelectedSubject(null);
+          }}
+        >
+          Register
+        </div>
+      </div>
+    );
   };
   const itemList = () => {
     var itemClassName = "item-subject";
@@ -686,6 +734,7 @@ const Subjects = (props) => {
       itemClassName = "item-teacher";
       return (
         <div className="list-teacher-wrap">
+          <div className="list-msg">Please select a teacher.</div>
           {[]
             .concat(teachers.listTeachers.items)
             .sort(sortCreatedAt("updatedAt", "desc"))
@@ -738,6 +787,7 @@ const Subjects = (props) => {
         </div>
       );
     } else {
+      let checkArr = true;
       return (
         <div className="list-subject-wrap">
           {[]
@@ -780,10 +830,24 @@ const Subjects = (props) => {
               }
               return false;
             })
-            .map(function (subject, index) {
+            .map(function (subject, index, arr) {
               if (selectedSubject !== null) {
-                if (selectedSubject.id === subject.id) {
-                  itemClassName = "item-subject-selected";
+                if (subject.TeacherInfo.name === "NO TEACHER") {
+                  if (selectedSubject.id === subject.id) {
+                    itemClassName = "item-subject-nosub-selected";
+                  } else {
+                    itemClassName = "item-subject-nosub";
+                  }
+                } else {
+                  if (selectedSubject.id === subject.id) {
+                    itemClassName = "item-subject-selected";
+                  } else {
+                    itemClassName = "item-subject";
+                  }
+                }
+              } else {
+                if (subject.TeacherInfo.name === "NO TEACHER") {
+                  itemClassName = "item-subject-nosub";
                 } else {
                   itemClassName = "item-subject";
                 }
@@ -868,6 +932,7 @@ const Subjects = (props) => {
   };
   return (
     <div className="home-wrap">
+      {topFilter()}
       {selectedItem()}
       {itemList()}
     </div>

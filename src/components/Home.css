@@ -1,0 +1,122 @@
+.main-table-wrap {
+  display: grid;
+  grid-template-columns: 1fr;
+  padding: 5px;
+}
+.main-table-wrap h2 {
+  padding: 20px 0 5px 15px;
+  font-size: 1.2em;
+}
+.main-table {
+  justify-items: center;
+  align-items: center;
+  font-size: 1em;
+}
+.table-header {
+  border-top: 1px solid #777;
+  font-weight: bold;
+}
+.main-table-subject-column {
+  display: grid;
+  grid-template-columns: 1fr 0.8fr 0.8fr;
+  border-bottom: 1px dashed #aaa;
+}
+.main-table-subject-column:last-of-type {
+  border-bottom: 1px solid #777;
+}
+.main-table-subject-column > div {
+  width: 100%;
+  height: 26px;
+  line-height: 24px;
+  text-align: center;
+}
+.main-table-subject-column .table-subject {
+  text-align: left;
+  padding-left: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.main-table-student-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 1px dashed #aaa;
+}
+.main-table-student-column > div {
+  width: 100%;
+  height: 26px;
+  line-height: 24px;
+  text-align: center;
+}
+.main-table-student-column:last-of-type {
+  border-bottom: 1px solid #777;
+}
+.main-table-teacher-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 1px dashed #aaa;
+}
+.main-table-teacher-column > div {
+  width: 100%;
+  height: 26px;
+  line-height: 24px;
+  text-align: center;
+}
+
+.main-table-teacher-column:last-of-type {
+  border-bottom: 1px solid #777;
+}
+.main-table-teacher-column:hover,
+.main-table-student-column:hover,
+.main-table-subject-column:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.notice-box {
+  border: 1px dashed #999;
+}
+.notice-title {
+  padding: 5px;
+  border-top: 1px dashed #999;
+  border-bottom: 1px dashed #999;
+  font-size: 1em;
+  font-weight: bold;
+}
+.notice-title:first-of-type {
+  border-top: 0;
+}
+.notice-content {
+  padding: 10px;
+  font-size: 0.9em;
+}
+
+/* 가로 해상도가 576px 보다 큰 화면에 적용 */
+@media screen and (min-width: 576px) {
+  .main-table-wrap {
+    width: 560px;
+    margin: 0 auto;
+  }
+}
+
+/* 가로 해상도가 768px 보다 큰 화면에 적용 */
+@media screen and (min-width: 768px) {
+  .main-table-wrap {
+    width: 100%;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    padding: 10px;
+  }
+  .main-table-wrap h2 {
+    font-size: 1.5em;
+  }
+}
+
+/* 가로 해상도가 992px 보다 큰 화면에 적용 */
+@media screen and (min-width: 992px) {
+  .main-table-wrap {
+    gap: 50px;
+    padding: 20px;
+  }
+}
+/* 가로 해상도가 1200px 보다 큰 화면에 적용 */
+@media screen and (min-width: 1225px) {
+}

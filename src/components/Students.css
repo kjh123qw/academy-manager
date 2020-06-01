@@ -11,6 +11,14 @@
   align-items: center;
   justify-items: center;
 }
+.top-info {
+  grid-column-start: 1;
+  grid-column-end: 4;
+  height: 20px;
+  padding-left: 5px;
+  font-size: 0.8em;
+  justify-self: start;
+}
 .filter-keyword-input {
   width: 100px;
   height: 30px;
@@ -78,10 +86,18 @@
   gap: 10px;
   padding: 5px;
 }
+.list-msg {
+  height: 40px;
+  padding-top: 15px;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-align: center;
+}
 .list-student-wrap .item-student {
   display: grid;
-  grid-template-columns: 130px 1fr;
+  grid-template-columns: 0.8fr 1fr;
   gap: 5px;
+  padding: 5px;
   background-color: white;
   border: 1px solid rgb(21, 163, 144);
   border-radius: 5px;
@@ -102,8 +118,9 @@
 }
 .item-student-selected {
   display: grid;
-  grid-template-columns: 130px 1fr;
+  grid-template-columns: 0.8fr 1fr;
   gap: 5px;
+  padding: 5px;
   background-color: rgb(208, 228, 221);
   border: 1px solid rgb(8, 119, 104);
   border-radius: 5px;
@@ -119,10 +136,54 @@
   font-size: 1em;
   font-weight: bold;
 }
+.list-student-wrap .item-student-nosub {
+  display: grid;
+  grid-template-columns: 0.8fr 1fr;
+  gap: 5px;
+  padding: 5px;
+  background-color: white;
+  border: 1px solid rgb(87, 90, 90);
+  border-radius: 5px;
+  align-items: center;
+  cursor: pointer;
+}
+.list-student-wrap .item-student-nosub:hover {
+  background-color: rgb(212, 255, 249);
+}
+.item-student-nosub .student-type {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  padding: 5px;
+  background-color: rgb(87, 90, 90);
+  color: #bbb;
+  font-size: 1em;
+  font-weight: bold;
+}
+.item-student-nosub-selected {
+  display: grid;
+  grid-template-columns: 0.8fr 1fr;
+  gap: 5px;
+  padding: 5px;
+  background-color: rgb(169, 182, 177);
+  border: 1px solid rgb(54, 54, 54);
+  border-radius: 5px;
+  align-items: center;
+  cursor: pointer;
+}
+.item-student-nosub-selected .student-type {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  padding: 5px;
+  background-color: rgb(54, 54, 54);
+  color: #bbb;
+  font-size: 1em;
+  font-weight: bold;
+}
 .item-student-started {
   display: grid;
-  grid-template-columns: 150px 1fr;
+  grid-template-columns: 0.8fr 1fr;
   gap: 5px;
+  padding: 5px;
   background-color: rgb(192, 192, 192);
   border: 1px solid rgb(136, 136, 136);
   border-radius: 5px;
@@ -261,16 +322,17 @@
   display: grid;
   grid-template-columns: 0.3fr 0.7fr 1fr 0.3fr;
   width: 80%;
+  padding: 3px;
   margin: 0 auto;
   background-color: rgba(0, 0, 0, 0.1);
-  border: 1px solid rgb(18, 117, 230);
+  /* border: 1px solid rgb(92, 114, 139); */
   align-items: center;
 }
 .selected-item-subject-title {
   grid-column-start: 1;
   grid-column-end: 5;
   padding: 3px 0;
-  background-color: rgb(18, 117, 230);
+  background-color: rgb(92, 114, 139);
   color: #ddd;
   text-align: center;
   font-size: 1em;
@@ -454,20 +516,67 @@
   text-align: center;
 }
 /* END ADD FORM */
-.list-student-wrap-nouse .item-student:hover {
-  animation-name: studentHover;
-  animation-duration: 1s;
-  animation-iteration-count: 1;
-  animation-timing-function: ease;
-  animation-direction: normal;
-  animation-fill-mode: forwards;
-  animation-play-state: running;
+
+/* 가로 해상도가 576px 보다 큰 화면에 적용 */
+@media screen and (min-width: 576px) {
+  .list-student-wrap,
+  .list-subject-wrap,
+  .list-teacher-wrap {
+    width: 95%;
+    margin: 0 auto;
+  }
 }
-@keyframes studentHover {
-  from {
-    background-color: white;
+
+/* 가로 해상도가 768px 보다 큰 화면에 적용 */
+@media screen and (min-width: 768px) {
+  .home-wrap {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    justify-items: center;
   }
-  to {
-    background-color: rgb(193, 240, 234);
+  .add-btn-wrap {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    width: 400px;
+    padding-left: 30px;
+    justify-self: start;
   }
+  .filter-keyword-input {
+    width: 140px;
+  }
+  .list-student-wrap {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+  }
+  .selected-item,
+  .add-form {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    top: 55px;
+    width: 95%;
+    padding: 5px 10px 5px;
+    z-index: 6;
+  }
+  .item-student div,
+  .item-student-selected div,
+  .item-student-started div,
+  .item-subject div,
+  .item-subject-selected div,
+  .item-subject-started div,
+  .item-teacher div,
+  .item-teacher-selected div,
+  .item-teacher-started div {
+    padding-left: 15px;
+  }
+}
+
+/* 가로 해상도가 992px 보다 큰 화면에 적용 */
+@media screen and (min-width: 992px) {
+}
+/* 가로 해상도가 1200px 보다 큰 화면에 적용 */
+@media screen and (min-width: 1225px) {
 }

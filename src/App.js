@@ -1,25 +1,19 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import Amplify from "aws-amplify";
 
-import { ApolloProvider, useQuery, useMutation } from "@apollo/react-hooks";
-import { gql } from "apollo-boost";
+import { ApolloProvider } from "@apollo/react-hooks";
 import { ApolloLink } from "apollo-link";
 import { createAuthLink } from "aws-appsync-auth-link";
 import { createHttpLink } from "apollo-link-http";
 import ApolloClient from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 
-import {
-  listTeachers,
-  listSubjects,
-  getSubject,
-  getStudent,
-  getTeacher,
-} from "./graphql/queries";
 import aws_exports from "./aws-exports";
 
 import Header from "./components/Header";
+import Footer from "./components/Footer";
+import Home from "./components/Home";
 import Students from "./components/Students";
 import Subjects from "./components/Subjects";
 import Teachers from "./components/Teachers";
@@ -42,18 +36,6 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-const Home = () => {
-  return (
-    <div className="home-wrap">
-      <div className="item-student">
-        <div className="studnet-type">STUDENT</div>
-        <div className="studnet-name">KIM JEONGHO</div>
-        <div className="student-class">HTML5</div>
-      </div>
-    </div>
-  );
-};
-
 const App = () => {
   return (
     <Router>
@@ -63,6 +45,7 @@ const App = () => {
         <Route path="/students" component={Students} />
         <Route path="/subjects" component={Subjects} />
         <Route path="/teachers" component={Teachers} />
+        <Footer />
       </div>
     </Router>
   );

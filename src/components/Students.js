@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import { v4 as uuidv4 } from "uuid";
 import { listStudents, listSubjects } from "../graphql/queries";
 import {
-  updateSubject,
   updateStudent,
   createStudent,
   deleteStudent,
@@ -24,7 +23,6 @@ const Students = () => {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [subjectSelect, setSubjectSelect] = useState(false);
-  const [saveSetting, setSaveSetting] = useState(0);
   const [inpuVisible, setInpuVisible] = useState(false);
   const [originalSubject, setOriginalSubject] = useState();
   const [newStudentId, setNewStudentId] = useState("");
@@ -35,7 +33,6 @@ const Students = () => {
   const [filterKeyword, setFilterKeyword] = useState("");
   const [filterNoitem, setFilterNoitem] = useState(true);
   const [modifyItem, setModifyItem] = useState(false);
-  const _isMounted = useRef(null);
   let date = new Date();
   let year = date.getFullYear();
   let month =
@@ -463,32 +460,76 @@ const Students = () => {
           </div>
         </div>
       );
-    } else {
-      return (
-        <div className="add-btn-wrap">
-          <input
-            type="text"
-            className="filter-keyword-input"
-            onChange={onChangeKeywordHandler}
-            value={filterKeyword}
-          />
-          <div
-            className={"filter-noitem" + ((filterNoitem && "-selected") || "")}
-            onClick={onClickNoitemHandler}
-          >
-            <div className="custom-label">No subject</div>
-          </div>
-          <div
-            className="add-btn"
-            onClick={() => {
-              setInpuVisible(true);
-            }}
-          >
-            Register
-          </div>
-        </div>
-      );
     }
+  };
+  const topFilter = () => {
+    return (
+      <div className="add-btn-wrap">
+        <div className="top-info">
+          Student List :{" "}
+          {
+            []
+              .concat(students.listStudents.items)
+              .sort(sortCreatedAt("updatedAt", "desc"))
+              .sort(sortStarted())
+              .sort(sortSbId("sbId"))
+              .filter((obj) => {
+                if (filterNoitem) return true;
+                return obj.sbId !== "0";
+              })
+              .filter((obj) => {
+                if (filterKeyword === "") return true;
+                for (
+                  var i = 0;
+                  i < obj.name.length - filterKeyword.length + 1;
+                  i++
+                ) {
+                  if (
+                    String(obj.name)
+                      .substr(i, filterKeyword.length)
+                      .toUpperCase() === filterKeyword.toUpperCase()
+                  )
+                    return true;
+                }
+                for (
+                  var j = 0;
+                  j < obj.SubjectInfo.subject.length - filterKeyword.length + 1;
+                  j++
+                ) {
+                  if (
+                    String(obj.SubjectInfo.subject)
+                      .substr(j, filterKeyword.length)
+                      .toUpperCase() === filterKeyword.toUpperCase()
+                  )
+                    return true;
+                }
+                return false;
+              }).length
+          }
+        </div>
+        <input
+          type="text"
+          className="filter-keyword-input"
+          onChange={onChangeKeywordHandler}
+          value={filterKeyword}
+        />
+        <div
+          className={"filter-noitem" + ((filterNoitem && "-selected") || "")}
+          onClick={onClickNoitemHandler}
+        >
+          <div className="custom-label">No subject</div>
+        </div>
+        <div
+          className="add-btn"
+          onClick={() => {
+            setInpuVisible(true);
+            setSelectedStudent(null);
+          }}
+        >
+          Register
+        </div>
+      </div>
+    );
   };
   const itemList = () => {
     var itemClassName = "item-student";
@@ -496,6 +537,7 @@ const Students = () => {
     if (subjectSelect) {
       return (
         <div className="list-subject-wrap">
+          <div className="list-msg">Please select a subject.</div>
           {[]
             .concat(subjects.listSubjects.items)
             .sort(sortDate("endApply"))
@@ -509,16 +551,16 @@ const Students = () => {
             .map(function (subject, index) {
               if (selectedSubject !== null) {
                 if (selectedSubject.id === subject.id) {
-                  itemClassName = "item-subject-selected";
+                  subjectClassName = "item-subject-selected";
                 } else {
-                  itemClassName = "item-subject";
+                  subjectClassName = "item-subject";
                 }
               }
               return (
                 <div
                   key={subject.id}
                   className={
-                    itemClassName +
+                    subjectClassName +
                     ((originalSubject.id === subject.id &&
                       " before-selected-subject") ||
                       "")
@@ -593,13 +635,13 @@ const Students = () => {
                   return true;
               }
               for (
-                var i = 0;
-                i < obj.SubjectInfo.subject.length - filterKeyword.length + 1;
-                i++
+                var j = 0;
+                j < obj.SubjectInfo.subject.length - filterKeyword.length + 1;
+                j++
               ) {
                 if (
                   String(obj.SubjectInfo.subject)
-                    .substr(i, filterKeyword.length)
+                    .substr(j, filterKeyword.length)
                     .toUpperCase() === filterKeyword.toUpperCase()
                 )
                   return true;
@@ -608,8 +650,22 @@ const Students = () => {
             })
             .map(function (student, index) {
               if (selectedStudent !== null) {
-                if (selectedStudent.id === student.id) {
-                  itemClassName = "item-student-selected";
+                if (student.SubjectInfo.subject === "NO SUBJECT") {
+                  if (selectedStudent.id === student.id) {
+                    itemClassName = "item-student-nosub-selected";
+                  } else {
+                    itemClassName = "item-student-nosub";
+                  }
+                } else {
+                  if (selectedStudent.id === student.id) {
+                    itemClassName = "item-student-selected";
+                  } else {
+                    itemClassName = "item-student";
+                  }
+                }
+              } else {
+                if (student.SubjectInfo.subject === "NO SUBJECT") {
+                  itemClassName = "item-student-nosub";
                 } else {
                   itemClassName = "item-student";
                 }
@@ -635,7 +691,7 @@ const Students = () => {
                 );
               } else {
                 return (
-                  <div key={student.id} className="item-student-started">
+                  <div key={student.id} className={"item-student-started"}>
                     <div className="student-type">STUDENT (STARTED)</div>
                     <div className="student-name">{student.name}</div>
                     <div className="student-subject">
@@ -652,6 +708,7 @@ const Students = () => {
   };
   return (
     <div className="home-wrap">
+      {topFilter()}
       {selectedItem()}
       {itemList()}
     </div>

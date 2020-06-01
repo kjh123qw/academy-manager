@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import { v4 as uuidv4 } from "uuid";
@@ -549,32 +549,79 @@ const Teachers = () => {
           </div>
         </div>
       );
-    } else {
-      return (
-        <div className="add-btn-wrap">
-          <input
-            type="text"
-            className="filter-keyword-input"
-            onChange={onChangeKeywordHandler}
-            value={filterKeyword}
-          />
-          <div
-            className={"filter-noitem" + ((filterNoitem && "-selected") || "")}
-            onClick={onClickNoitemHandler}
-          >
-            <div className="custom-label">No subject</div>
-          </div>
-          <div
-            className="add-btn"
-            onClick={() => {
-              setInpuVisible(true);
-            }}
-          >
-            Register
-          </div>
-        </div>
-      );
     }
+  };
+  const topFilter = () => {
+    return (
+      <div className="add-btn-wrap">
+        <div className="top-info">
+          Teacher List :{" "}
+          {
+            []
+              .concat(teachers.listTeachers.items)
+              .sort(sortCreatedAt("updatedAt", "desc"))
+              .sort(sortStarted())
+              .sort(sortSbId("sbId"))
+              .filter((obj) => {
+                return obj.id !== "0";
+              })
+              .filter((obj) => {
+                if (filterNoitem) return true;
+                return obj.sbId !== "0";
+              })
+              .filter((obj) => {
+                if (filterKeyword === "") return true;
+                for (
+                  var i = 0;
+                  i < obj.name.length - filterKeyword.length + 1;
+                  i++
+                ) {
+                  if (
+                    String(obj.name)
+                      .substr(i, filterKeyword.length)
+                      .toUpperCase() === filterKeyword.toUpperCase()
+                  )
+                    return true;
+                }
+                for (
+                  var i = 0;
+                  i < obj.SubjectInfo.subject.length - filterKeyword.length + 1;
+                  i++
+                ) {
+                  if (
+                    String(obj.SubjectInfo.subject)
+                      .substr(i, filterKeyword.length)
+                      .toUpperCase() === filterKeyword.toUpperCase()
+                  )
+                    return true;
+                }
+                return false;
+              }).length
+          }
+        </div>
+        <input
+          type="text"
+          className="filter-keyword-input"
+          onChange={onChangeKeywordHandler}
+          value={filterKeyword}
+        />
+        <div
+          className={"filter-noitem" + ((filterNoitem && "-selected") || "")}
+          onClick={onClickNoitemHandler}
+        >
+          <div className="custom-label">No subject</div>
+        </div>
+        <div
+          className="add-btn"
+          onClick={() => {
+            setInpuVisible(true);
+            setSelectedTeacher(null);
+          }}
+        >
+          Register
+        </div>
+      </div>
+    );
   };
   const itemList = () => {
     var itemClassName = "item-teacher";
@@ -583,6 +630,7 @@ const Teachers = () => {
       itemClassName = "item-subject";
       return (
         <div className="list-subject-wrap">
+          <div className="list-msg">Please select a subject.</div>
           {[]
             .concat(subjects.listSubjects.items)
             .sort(sortDate("endApply"))
@@ -696,13 +744,26 @@ const Teachers = () => {
             })
             .map(function (teacher, index) {
               if (selectedTeacher !== null) {
-                if (selectedTeacher.id === teacher.id) {
-                  itemClassName = "item-teacher-selected";
+                if (teacher.SubjectInfo.subject === "NO SUBJECT") {
+                  if (selectedTeacher.id === teacher.id) {
+                    itemClassName = "item-teacher-nosub-selected";
+                  } else {
+                    itemClassName = "item-teacher-nosub";
+                  }
+                } else {
+                  if (selectedTeacher.id === teacher.id) {
+                    itemClassName = "item-teacher-selected";
+                  } else {
+                    itemClassName = "item-teacher";
+                  }
+                }
+              } else {
+                if (teacher.SubjectInfo.subject === "NO SUBJECT") {
+                  itemClassName = "item-teacher-nosub";
                 } else {
                   itemClassName = "item-teacher";
                 }
               }
-
               if (
                 teacher.sbId === "0" ||
                 newDate <= Number(teacher.SubjectInfo.endApply)
@@ -740,6 +801,7 @@ const Teachers = () => {
   };
   return (
     <div className="home-wrap">
+      {topFilter()}
       {selectedItem()}
       {itemList()}
     </div>
