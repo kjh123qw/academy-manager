@@ -40,25 +40,27 @@ const Home = () => {
         <div className="main-table">
           <h2>Notice</h2>
           <div className="notice-box">
-            <div className="notice-title">１．本ページの機能</div>
+            <div className="notice-title">１．このページの機能</div>
             <div className="notice-content">
               {" "}
-              　-　本ページはアカデミーの管理をする目的で、学生、授業、教師の3種類で分類してデータを管理するように設計したページである。
+              　-　このページはアカデミーの管理をする目的で、学生、授業、教師の3種類で分類してデータを管理するように設計したページである。
             </div>
-            <div className="notice-title">２．本ページで使用した技術</div>
+            <div className="notice-title">２．このページで使用した技術</div>
             <div className="notice-content">
               {" "}
-              　-　本ページではAWS Amplify, AWS Appsync, AWS DynamoDB,
+              　-　このページではAWS Amplify, AWS Appsync, AWS DynamoDB,
               NodeJs(v12.16.2), ReactJS(v16.13.1), ReactHooks(v3.1.5), Apollo,
               Graphql, Githubの技術を使って制作した。
             </div>
-            <div className="notice-title">３．本ページの目的</div>
+            <div className="notice-title">３．このページの目的</div>
             <div className="notice-content">
               {" "}
-              　-　本ページはポートフォリオの目的で制作した。
+              　-　このページはポートフォリオの目的で制作した。
             </div>
             <div className="notice-title">４．政策の期間</div>
             <div className="notice-content">　-　2020/05/26 ~</div>
+            <div className="notice-title">５．テストしたブラウザ</div>
+            <div className="notice-content">　-　Microsoft Edge, Chrome</div>
           </div>
         </div>
         <div className="main-table">
@@ -67,7 +69,7 @@ const Home = () => {
             <div className="notice-title">1.0.0 (05/26)</div>
             <div className="notice-content">
               　-　ReactJSのアプリをAWS Amplify, AWS Appsync, AWS DynamoDB,
-              Github 利用してビルドとデータの連結。
+              Githubを利用してビルドとデータの連結。
               <br />
               　-　「メーン、学生、授業、教師」のページを制作。
             </div>
@@ -188,7 +190,7 @@ const Home = () => {
           <div className="notice-box">
             <div className="notice-title">1.0.0 (05/26)</div>
             <div className="notice-content">
-              - ReactJS 앱 AWS Amplify, AWS Appsync, AWS DynamoDB, Github
+              - ReactJS 앱 AWS Amplify, AWS Appsync, AWS DynamoDB, Github 를
               이용하여 빌드
               <br />- [메인, 학생, 수업, 교사] 페이지 제작
             </div>
@@ -361,6 +363,37 @@ const Home = () => {
                 .filter((obj) => {
                   return obj.sbId === "0";
                 }).length
+            }
+          </div>
+        </div>
+      </div>
+      <div className="main-table">
+        <h2>the Whole Information</h2>
+        <div className="main-table-student-column">
+          <div className="table-header">Students</div>
+          <div className="table-header">Subjects</div>
+          <div className="table-header">Teachers</div>
+        </div>
+        <div className="main-table-student-column">
+          <div className="table-value">
+            {
+              [].concat(students.listStudents.items).filter((obj) => {
+                return obj.id !== "0";
+              }).length
+            }
+          </div>
+          <div className="table-value">
+            {
+              [].concat(subjects.listSubjects.items).filter((obj) => {
+                return obj.id !== "0";
+              }).length
+            }
+          </div>
+          <div className="table-value">
+            {
+              [].concat(teachers.listTeachers.items).filter((obj) => {
+                return obj.id !== "0";
+              }).length
             }
           </div>
         </div>
