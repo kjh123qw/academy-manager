@@ -25,10 +25,11 @@ const Footer = () => {
           <div className="contact-us">
             <h3>CONTACT US</h3>
             <p>
-              137, Gasan digital 1-ro, Geumcheon-gu, Seoul, Republic of Korea
+              02466, 7, Gosanja-ro 56-gil, Dongdaemun-gu, Seoul, Republic of
+              Korea
             </p>
-            <p>+82 1234-5678</p>
-            <p>info&#64;am.com</p>
+            <p>+82 10-7381-0416</p>
+            <p>kjh123qwa&#64;gmail.com</p>
           </div>
           <div className="follow-us">
             <h3>FOLLOW US</h3>
@@ -43,7 +44,7 @@ const Footer = () => {
         </div>
         <div className="footer-bottom">
           <div className="footer-copyright">
-            <span>&copy; 2020 Academy Manager, Corp. All rights reserved.</span>
+            <span>&copy; 2020 KIM JEONGHO. All rights reserved.</span>
           </div>
           <div className="footer-gnb">Privacy Policy Terms of Service</div>
         </div>

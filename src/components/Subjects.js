@@ -17,7 +17,7 @@ import filterApply from "../filterApply";
 import sortDate from "../sortDate";
 import sortCreatedAt from "../sortCreatedAt";
 import sortSjStarted from "../sortSjStarted";
-import blankImage from "../images/blank-profile.png";
+import blankImage from "../images/no-image.png";
 import "./Teachers.css";
 import "./Subjects.css";
 

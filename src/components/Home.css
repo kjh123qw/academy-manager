@@ -14,6 +14,7 @@
 }
 .table-header {
   border-top: 1px solid #777;
+  background-color: #eee;
   font-weight: bold;
 }
 .main-table-subject-column {
@@ -78,6 +79,7 @@
   padding: 5px;
   border-top: 1px dashed #999;
   border-bottom: 1px dashed #999;
+  background-color: #eee;
   font-size: 1em;
   font-weight: bold;
 }
@@ -89,6 +91,40 @@
   font-size: 0.9em;
 }
 
+.lang-btn {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 300px;
+  margin: 0 auto;
+  padding: 5px 0 0 0;
+}
+.lang-btn > div {
+  display: grid;
+  grid-template-columns: 0.5fr 1fr;
+  padding: 10px;
+  align-items: center;
+  justify-items: center;
+  cursor: pointer;
+}
+.lang-btn > div:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+.lang-btn > .lang-btn-selected {
+  background-color: rgba(27, 183, 211, 0.466);
+}
+.lang-btn > .lang-btn-selected:hover {
+  background-color: rgba(1, 142, 167, 0.466);
+}
+.lang-btn img {
+  height: 20px;
+}
+.main-line {
+  padding: 20px 0 5px 0;
+}
+.main-line div {
+  height: 5px;
+  border-bottom: 1px dashed #999;
+}
 /* 가로 해상도가 576px 보다 큰 화면에 적용 */
 @media screen and (min-width: 576px) {
   .main-table-wrap {
@@ -107,6 +143,11 @@
   }
   .main-table-wrap h2 {
     font-size: 1.5em;
+  }
+  .lang-btn,
+  .main-line {
+    grid-column-start: 1;
+    grid-column-end: 3;
   }
 }
 
