@@ -101,6 +101,9 @@ const Students = () => {
   const openChangeSubjectHandler = (e) => {
     e.preventDefault();
     setSubjectSelect(true);
+    if (selectedStudent.id !== null) {
+      setOriginalSubject(selectedStudent.SubjectInfo);
+    }
   };
   const closeSelectedItem = (e) => {
     e.preventDefault();

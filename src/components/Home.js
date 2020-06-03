@@ -64,7 +64,7 @@ const Home = () => {
           </div>
         </div>
         <div className="main-table">
-          <h2>Version Record</h2>
+          <h2>Version record</h2>
           <div className="notice-box">
             <div className="notice-title">1.0.0 (05/26)</div>
             <div className="notice-content">
@@ -123,7 +123,7 @@ const Home = () => {
               <br />
               　-　学生数を出力
               <br />
-              　-　Notice, Version Record, Todo Listを入力
+              　-　Notice, Version record, Todo listを入力
             </div>
             <div className="notice-title">1.0.6 (06/01)</div>
             <div className="notice-content">
@@ -136,7 +136,7 @@ const Home = () => {
           </div>
         </div>
         <div className="main-table">
-          <h2>Todo List</h2>
+          <h2>Todo list</h2>
           <div className="notice-box">
             <div className="notice-title">コードを修正</div>
             <div className="notice-content">
@@ -186,7 +186,7 @@ const Home = () => {
           </div>
         </div>
         <div className="main-table">
-          <h2>Version Record</h2>
+          <h2>Version record</h2>
           <div className="notice-box">
             <div className="notice-title">1.0.0 (05/26)</div>
             <div className="notice-content">
@@ -239,7 +239,7 @@ const Home = () => {
           </div>
         </div>
         <div className="main-table">
-          <h2>Todo List</h2>
+          <h2>Todo list</h2>
           <div className="notice-box">
             <div className="notice-title">코드 정리</div>
             <div className="notice-content">
@@ -258,7 +258,7 @@ const Home = () => {
   return (
     <div className="main-table-wrap">
       <div className="main-table">
-        <h2>the List of Subjects</h2>
+        <h2>The list of subjects</h2>
         <div className="main-table-subject-column">
           <div className="table-header table-subject">Subject</div>
           <div className="table-header">State</div>
@@ -297,7 +297,7 @@ const Home = () => {
           })}
       </div>
       <div className="main-table">
-        <h2>the Information of Teachers</h2>
+        <h2>The information of teachers</h2>
         <div className="main-table-teacher-column">
           <div className="table-header">Name</div>
           <div className="table-header">Subject</div>
@@ -327,7 +327,7 @@ const Home = () => {
           })}
       </div>
       <div className="main-table">
-        <h2>the Information of Students</h2>
+        <h2>The information of students</h2>
         <div className="main-table-student-column">
           <div className="table-header">Total</div>
           <div className="table-header">Applicant</div>
@@ -368,7 +368,7 @@ const Home = () => {
         </div>
       </div>
       <div className="main-table">
-        <h2>the Whole Information</h2>
+        <h2>The number of items</h2>
         <div className="main-table-student-column">
           <div className="table-header">Students</div>
           <div className="table-header">Subjects</div>
