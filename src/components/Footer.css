@@ -67,8 +67,4 @@ footer {
 }
 /* 가로 해상도가 1200px 보다 큰 화면에 적용 */
 @media screen and (min-width: 1225px) {
-  #footer-wrap {
-    width: 1200px;
-    margin: 0 auto;
-  }
 }
