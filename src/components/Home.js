@@ -18,15 +18,42 @@ const Home = () => {
       : "0" + (1 + date.getMonth());
   let day = date.getDate() >= 10 ? date.getDate() : "0" + date.getDate();
   const newDate = Number(year + "" + month + "" + day);
-  const { loading: stuLoading, error: stuError, data: students } = useQuery(
-    gql(listStudents)
-  );
-  const { loading: sbjLoading, error: sbjError, data: subjects } = useQuery(
-    gql(listSubjects)
-  );
-  const { loading: tcLoading, error: tcError, data: teachers } = useQuery(
-    gql(listTeachers)
-  );
+  const {
+    loading: stuLoading,
+    error: stuError,
+    data: students,
+    refetch: stdRefetch,
+    networkStatus: stdNetworkStatus,
+  } = useQuery(gql(listStudents), {
+    notifyOnNetworkStatusChange: true,
+  });
+  const {
+    loading: sbjLoading,
+    error: sbjError,
+    data: subjects,
+    refetch: sbjRefetch,
+    networkStatus: sbjNetworkStatus,
+  } = useQuery(gql(listSubjects), {
+    notifyOnNetworkStatusChange: true,
+  });
+  const {
+    loading: tcLoading,
+    error: tcError,
+    data: teachers,
+    refetch: tcRefetch,
+    networkStatus: tcNetworkStatus,
+  } = useQuery(gql(listTeachers), {
+    notifyOnNetworkStatusChange: true,
+  });
+  // const { loading: stuLoading, error: stuError, data: students } = useQuery(
+  //   gql(listStudents)
+  // );
+  // const { loading: sbjLoading, error: sbjError, data: subjects } = useQuery(
+  //   gql(listSubjects)
+  // );
+  // const { loading: tcLoading, error: tcError, data: teachers } = useQuery(
+  //   gql(listTeachers)
+  // );
   if (stuLoading || sbjLoading || tcLoading)
     return (
       <div className="loading-layer">
