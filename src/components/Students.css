@@ -188,6 +188,10 @@
   border: 1px solid rgb(136, 136, 136);
   border-radius: 5px;
   align-items: center;
+  cursor: pointer;
+}
+.item-student-started:hover {
+  background-color: rgb(185, 185, 185);
 }
 .item-student-started .student-type {
   grid-column-start: 1;

@@ -617,7 +617,7 @@ const Students = () => {
           {[]
             .concat(students.listStudents.items)
             .sort(sortCreatedAt("updatedAt", "desc"))
-            .sort(sortStarted())
+            // .sort(sortStarted())
             .sort(sortSbId("sbId"))
             .filter((obj) => {
               if (filterNoitem) return true;
@@ -694,7 +694,11 @@ const Students = () => {
                 );
               } else {
                 return (
-                  <div key={student.id} className={"item-student-started"}>
+                  <div
+                    key={student.id}
+                    className={"item-student-started"}
+                    onClick={studentSelectHandler.bind(this, student)}
+                  >
                     <div className="student-type">STUDENT (STARTED)</div>
                     <div className="student-name">{student.name}</div>
                     <div className="student-subject">

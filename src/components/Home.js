@@ -298,7 +298,6 @@ const Home = () => {
           })
           .sort(sortDate("endApply"))
           .map((subject, index) => {
-            console.log(subject.startApply > newDate);
             return (
               <div className="main-table-subject-column" key={index}>
                 <div className="table-value table-subject">

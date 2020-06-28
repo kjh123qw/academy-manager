@@ -4,7 +4,7 @@ import { withRouter, Link } from "react-router-dom";
 import "./Header.css";
 
 const Header = (props) => {
-  console.log(props.location.pathname);
+  // console.log(props.location.pathname);
   return (
     <>
       <header>

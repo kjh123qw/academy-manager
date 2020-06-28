@@ -386,7 +386,6 @@ const Subjects = () => {
   };
   const onChangeKeywordHandler = (e) => {
     e.preventDefault();
-    console.log(e.target.value);
     setFilterKeyword(e.target.value);
   };
   const onClickNoitemHandler = (e) => {
@@ -424,7 +423,7 @@ const Subjects = () => {
               type="text"
               name="subjectTotal"
               value={newSubjectTotal}
-              placeholder="Maximum 10"
+              placeholder="Minimum 10"
               onChange={onChangeTotalHandler}
             />
           </div>
@@ -523,7 +522,6 @@ const Subjects = () => {
                     endDay: newSubjectEndDay,
                     tcId: newSubjectTcId,
                   };
-                  console.log(inputSubject);
                   await doUpdateSubject({
                     variables: {
                       input: inputSubject,
@@ -588,7 +586,6 @@ const Subjects = () => {
                     endDay: newSubjectEndDay,
                     tcId: newSubjectTcId,
                   };
-                  console.log(inputSubject);
                   await doCreateSubject({
                     variables: {
                       input: inputSubject,
@@ -899,7 +896,11 @@ const Subjects = () => {
                 );
               } else {
                 return (
-                  <div key={subject.id} className="item-subject-started">
+                  <div
+                    key={subject.id}
+                    className="item-subject-started"
+                    onClick={subjectSelectHandler.bind(this, subject)}
+                  >
                     <div className="subject-type">
                       SUBJECT [ {subject.StudentsInfo.items.length} /{" "}
                       {subject.total} ] (STARTED)

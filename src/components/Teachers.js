@@ -129,9 +129,6 @@ const Teachers = () => {
   const saveSubjectHandler = async (e) => {
     e.preventDefault();
     if (selectedTeacher.id !== null && selectedSubject.id !== null) {
-      // await client.resetStore().then(async () => {
-      // client.cache.reset();
-      // console.log(client);
       await doUpdateSubject({
         variables: {
           input: { id: originalSubject.id, tcId: "0" },
@@ -784,7 +781,11 @@ const Teachers = () => {
                 );
               } else {
                 return (
-                  <div key={teacher.id} className="item-teacher-started">
+                  <div
+                    key={teacher.id}
+                    className="item-teacher-started"
+                    onClick={teacherSelectHandler.bind(this, teacher)}
+                  >
                     <div className="teacher-type">TEACHER (STARTED)</div>
                     <div className="teacher-name">{teacher.name}</div>
                     <div className="teacher-subject">
